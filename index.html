@@ -74,8 +74,8 @@
 
     <section class="hero">
         <h1>الشركة المصرية للصرافة</h1>
+        <p>احدى شركات مجموعة المزلاوي القابضه </p>
     </section>
-<p>احدى شركات مجموعة المزلاوي القابضه </p>
     <div class="main-grid">
         <!-- جميع أسعار العملات -->
         <div class="card" id="rates">
@@ -85,6 +85,23 @@
                     <thead>
                         <tr><th>العملة</th><th>شراء</th><th>بيع</th></tr>
                     </thead>
+                    <body>
+
+    <!-- حط كارت السعر والآلة الحاسبة هنا جوه البودي -->
+    <div class="rate-card">
+        <h3>سعر الدولار اليوم (مقابل الجنيه):</h3>
+        <h2 id="usd-rate">جاري التحميل...</h2>
+    </div>
+
+    <div class="calculator-card">
+        <h3>حاسبة التحويل</h3>
+        <input type="number" id="usd-input" placeholder="أدخل المبلغ بالدولار" oninput="calculateCurrency()">
+        <p id="calc-result">النتيجة ستظهر هنا</p>
+    </div>
+
+    <!-- استدعاء ملف الجافاسكريبت بيكون قبل قفلة البودي مباشرة -->
+    <script src="script.js"></script>
+</body>
                     <tbody>
                         <tr><td>دولار أمريكي (USD)</td><td>51.75</td><td>51.75</td></tr>
                         <tr><td>يورو (EUR)</td><td>52.80</td><td>53.10</td></tr>
@@ -140,7 +157,7 @@
                     <h3>فرع سمالوط (المنيا)</h3>
                     <p><i class="fa-solid fa-location-dot"></i> شارع التجارة، مدينة سمالوط، المنيا</p>
                     <p><i class="fa-solid fa-clock"></i> 8:30 صباحاً - 11:00 مساءً (يومياً)</p>
-                    <p><i class="fa-solid fa-phone"></i> 01003394577</p>
+                    <p><i class="fa-solid fa-phone"></i>086-3446509</p>
                 </div>
             </div>
 
@@ -191,6 +208,44 @@
             } else {
                 document.getElementById('calcOutput').innerText = 'يرجى إدخال مبلغ صحيح';
             }
+            // متغير لتخزين سعر الدولار الحالي
+let usdToEgpRate = 0;
+
+// دالة لجلب سعر الدولار مقابل الجنيه
+async function getBankEgyptRates() {
+    try {
+        // طلب السعر الحالي للدولار مقابل الجنيه المصري
+        const response = await fetch('https://open.er-api.com/v6/latest/USD');
+        const data = await response.json();
+
+        // استخراج السعر الخاص بالجنيه المصري EGP
+        usdToEgpRate = data.rates.EGP;
+
+        // عرض السعر في الموقع (مع التقريب لقرشين)
+        document.getElementById('usd-rate').innerText = usdToEgpRate.toFixed(2) + " جنيه";
+        
+        console.log("تم جلب سعر الدولار بنجاح:", usdToEgpRate);
+    } catch (error) {
+        console.error("خطأ في جلب السعر:", error);
+        document.getElementById('usd-rate').innerText = "غير متوفر حالياً";
+    }
+}
+
+// دالة الآلة الحاسبة: تحويل من دولار لـ جنيه تلقائياً
+function calculateCurrency() {
+    const usdAmount = document.getElementById('usd-input').value;
+    const resultElement = document.getElementById('calc-result');
+
+    if (usdAmount && usdAmount > 0) {
+        const totalInEgp = usdAmount * usdToEgpRate;
+        resultElement.innerText = `${usdAmount} دولار = ${totalInEgp.toFixed(2)} جنيه مصري`;
+    } else {
+        resultElement.innerText = "برجاء إدخال مبلغ صحيح";
+    }
+}
+
+// تشغيل جلب السعر فور فتح الصفحة
+getBankEgyptRates();
         }
     </script>
 </body>
