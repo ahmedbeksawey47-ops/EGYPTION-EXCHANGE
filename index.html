@@ -247,6 +247,41 @@ function calculateCurrency() {
 // تشغيل جلب السعر فور فتح الصفحة
 getBankEgyptRates();
         }
+        // دالة لجلب وتحديث أسعار العملات تلقائياً
+async function updateRates() {
+    try {
+        // جلب أحدث أسعار العملات مقابل الدولار
+        const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        const data = await response.json();
+
+        // سعر الجنيه المصري مقابل الدولار
+        const egpRate = data.rates.EGP;
+        
+        // حساب سعر اليورو مقابل الجنيه
+        const eurRate = (data.rates.EGP / data.rates.EUR).toFixed(2);
+        
+        // حساب سعر الريال السعودي مقابل الجنيه
+        const sarRate = (data.rates.EGP / data.rates.SAR).toFixed(2);
+
+        // عرض الأسعار المحدثة فوراً في الصفحة
+        if (document.getElementById('usd-price')) {
+            document.getElementById('usd-price').innerText = egpRate.toFixed(2) + " جنيه";
+        }
+        if (document.getElementById('eur-price')) {
+            document.getElementById('eur-price').innerText = eurRate + " جنيه";
+        }
+        if (document.getElementById('sar-price')) {
+            document.getElementById('sar-price').innerText = sarRate + " جنيه";
+        }
+
+        console.log("تم تحديث جميع الأسعار بنجاح!");
+    } catch (error) {
+        console.error("خطأ في جلب الأسعار:", error);
+    }
+}
+
+// تشغيل التحديث تلقائياً بمجرد فتح الزائر للموقع
+document.addEventListener('DOMContentLoaded', updateRates);
     </script>
 </body>
 </html>
