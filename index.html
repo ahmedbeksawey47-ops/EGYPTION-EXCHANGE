@@ -140,6 +140,27 @@
                     <option value="128.60">دينار بحريني (BHD)</option>
                     <option value="125.90">ريال عماني (OMR)</option>
                 </select>
+                <div class="bank-section">
+    <h2>🏦 أسعار العملات اليوم في بنك مصر</h2>
+    
+    <div class="currency-card">
+        <h3>🇺🇸 الدولار الأمريكي (USD):</h3>
+        <span id="usd-price">جاري التحميل من بنك مصر...</span>
+    </div>
+
+    <div class="currency-card">
+        <h3>🇪🇺 اليورو (EUR):</h3>
+        <span id="eur-price">جاري التحميل من بنك مصر...</span>
+    </div>
+
+    <div class="currency-card">
+        <h3>🇸🇦 الريال السعودي (SAR):</h3>
+        <span id="sar-price">جاري التحميل من بنك مصر...</span>
+    </div>
+</div>
+
+<!-- استدعاء ملف الـ JavaScript قبل إغلاق body -->
+<script src="script.js"></script>
             </div>
             <button class="btn" onclick="processCalc()">احسب بالجنيه المصري</button>
             <div class="result-box" id="calcOutput">النتيجة: 4,850.00 جنيه مصري</div>
@@ -282,6 +303,69 @@ async function updateRates() {
 
 // تشغيل التحديث تلقائياً بمجرد فتح الزائر للموقع
 document.addEventListener('DOMContentLoaded', updateRates);
+        // دالة لجلب أسعار العملات المباشرة الخاصة ببنك مصر
+async function getBanqueMisrRates() {
+    // العناصر اللي هنعرض فيها الأسعار
+    const usdElement = document.getElementById('usd-price');
+    const eurElement = document.getElementById('eur-price');
+    const sarElement = document.getElementById('sar-price');
+
+    try {
+        // طلب الأسعار المباشرة للبنوك المصرية
+        const response = await fetch('https://raw.githubusercontent.com/ahmedsalam/egyptian-banks-rates/main/rates.json');
+        
+        if (!response.ok) {
+            throw new Error("فشل في الاتصال بالمصدر");
+        }
+
+        const data = await response.json();
+        
+        // البحث عن بيانات "بنك مصر" من بين قائمة البنوك
+        const banqueMisr = data.banks.find(bank => bank.name_en === "Banque Misr" || bank.name_ar === "بنك مصر");
+
+        if (banqueMisr) {
+            // جلب سعر الشراء والبيع للدولار
+            const usdBuy = banqueMisr.currencies.USD.buy;
+            const usdSell = banqueMisr.currencies.USD.sell;
+
+            // جلب سعر اليورو والريال
+            const eurBuy = banqueMisr.currencies.EUR.buy;
+            const sarBuy = banqueMisr.currencies.SAR.buy;
+
+            // عرض الأسعار المحدثة في الموقع
+            if (usdElement) usdElement.innerText = `${usdBuy} شراء | ${usdSell} بيع`;
+            if (eurElement) eurElement.innerText = `${eurBuy} جنيه`;
+            if (sarElement) sarElement.innerText = `${sarBuy} جنيه`;
+
+            console.log("تم جلب أسعار بنك مصر بنجاح!");
+        } else {
+            // حل بديل في حال عدم العثور على البنك بنفس الاسم
+            fetchFallbackRates();
+        }
+
+    } catch (error) {
+        console.warn("جاري استخدام المصدر الاحتياطي لأسعار بنك مصر:", error);
+        fetchFallbackRates();
+    }
+}
+
+// دالة احتياطية في حال تعثر المصدر الأول
+async function fetchFallbackRates() {
+    try {
+        const res = await fetch('https://open.er-api.com/v6/latest/USD');
+        const data = await res.json();
+        const egp = data.rates.EGP.toFixed(2);
+        
+        if (document.getElementById('usd-price')) {
+            document.getElementById('usd-price').innerText = egp + " جنيه (سعر البنك المركزي)";
+        }
+    } catch (e) {
+        console.error("خطأ في جلب البيانات الاحتياطية", e);
+    }
+}
+
+// تشغيل جلب الأسعار فور فتح الزائر للموقع
+document.addEventListener('DOMContentLoaded', getBanqueMisrRates);
     </script>
 </body>
 </html>
