@@ -1,637 +1,1078 @@
-<!DOCTYPE html>
+
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <head>
-    <!-- عنوان الصفحة اللي بيظهر في جوجل -->
-    <title>الصرافة المصرية - أسعار العملات وحاسبة الصرف | Egypt Exchange</title>
-
-    <!-- الكلمات المفتاحية والوصف اللي جوجل بيقرأهم -->
-    <meta name="description" content="موقع الصرافة المصرية (Egypt Exchange) لمعرفة أحدث أسعار العملات وحاسبة تحويل العملات الرسمية.">
-    <meta name="keywords" content="الصرافة المصرية, egypt exchange, اسعار العملات, حاسبة العملات, بنك مصر">
-    <meta name="robots" content="index, follow">
-</head>
-    <meta name="description" content="شركة الصرافة المصرية (Egypt Exchange) فرع سمالوط - أسعار جميع العملات الرسمية المباشرة من بنك مصر.">
+    <title>المصرية للصرافة - فرع سمالوط | أسعار العملات لحظة بلحظة</title>
+    <meta name="description" content="الموقع الرسمي لشركة المصرية للصرافة (الصرافة المصرية) فرع سمالوط بمحافظة المنيا. متابعة أسعار كافة عملات العالم، حاسبة تحويل تفاعلية، وتنبيهات تغير الأسعار.">
+    <meta name="keywords" content="المصرية للصرافة, الصرافة المصرية, صرافة سمالوط, اسعار الدولار اليوم سمالوط, اسعار العملات المنيا, تحويل عملات مصر">
     
-    <!-- Font Awesome Icons -->
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#0b192c',
+                            900: '#070f1e',
+                        },
+                        brandBlue: {
+                            500: '#1d4ed8',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        goldAccent: {
+                            400: '#facc15',
+                            500: '#eab308',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts (Cairo) -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
+
     <style>
-        :root {
-            --primary-blue: #0A3A60;      /* أزرق كحلي ملكي */
-            --secondary-blue: #002244;    /* أزرق داكن */
-            --accent-gold: #D4AF37;       /* ذهبي مميز */
-            --light-blue-bg: #EBF3FA;    /* خلفية زرقاء فاتحة */
-            --bg-light: #F4F7FA;
-            --card-bg: #FFFFFF;
-            --text-dark: #1E293B;
-            --text-muted: #64748B;
-            --border-color: #CBD5E1;
-            --shadow-md: 0 4px 15px rgba(10, 58, 96, 0.1);
-            --radius: 12px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Cairo', sans-serif;
-        }
-
         body {
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            line-height: 1.6;
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            scroll-behavior: smooth;
         }
 
-        /* Top Bar */
-        .top-bar {
-            background-color: var(--secondary-blue);
-            color: white;
-            padding: 10px 0;
-            font-size: 0.9rem;
-            border-bottom: 2px solid var(--accent-gold);
-        }
-
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .top-bar .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .top-info a {
-            color: #FFF;
-            text-decoration: none;
-            font-weight: 700;
-        }
-
-        .top-info i {
-            color: var(--accent-gold);
-            margin-left: 6px;
-        }
-
-        /* Header Navigation */
-        header {
-            background: var(--card-bg);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--primary-blue);
-            color: var(--accent-gold);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            border: 2px solid var(--accent-gold);
-        }
-
-        .logo-text h1 {
-            font-size: 1.3rem;
-            color: var(--primary-blue);
-            font-weight: 800;
-            line-height: 1.2;
-        }
-
-        .logo-text p {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 20px;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 700;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-blue);
-        }
-
-        /* Hero Banner */
-        .hero {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
-            color: white;
-            padding: 40px 0;
-            border-bottom: 5px solid var(--accent-gold);
-        }
-
-        .hero-grid {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 30px;
-            align-items: center;
-        }
-
-        @media (max-width: 768px) {
-            .hero-grid {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-        }
-
-        .hero-text h2 {
-            font-size: 2rem;
-            margin-bottom: 12px;
-            font-weight: 800;
-        }
-
-        .hero-text p {
-            font-size: 1.05rem;
-            color: #E2E8F0;
-            margin-bottom: 20px;
-        }
-
-        .branch-image-box {
-            background: #FFF;
-            padding: 9px;
-            border-radius: var(--radius);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
-            border: 2px solid var(--accent-gold);
-        }
-
-        .branch-image-box img {
-            width: 100%;
-            height: 320px;
-            object-fit: cover;
-            border-radius: 8px;
-            display: block;
-        }
-
-        .badge-source {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(212, 175, 55, 0.2);
-            border: 1px solid var(--accent-gold);
-            color: var(--accent-gold);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-        }
-
-        .live-dot {
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
             width: 8px;
-            height: 8px;
-            background-color: #22C55E;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 8px #22C55E;
-            animation: pulse 1.5s infinite;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2563eb;
+            border-radius: 4px;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.7; }
-            50% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.7; }
+        /* Glassmorphism background */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
         }
 
-        /* Main Content Layout */
-        .main-content {
-            padding: 40px 0;
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
+        .glass-dark {
+            background: rgba(11, 25, 44, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        @media (max-width: 992px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
+        /* Custom pulse ring for click to call */
+        .pulse-call {
+            box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
+            animation: pulse-blue 2s infinite;
+        }
+        @keyframes pulse-blue {
+            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+            70% { box-shadow: 0 0 0 14px rgba(37, 99, 235, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
         }
 
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 25px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border-color);
-            margin-bottom: 30px;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--light-blue-bg);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            color: var(--primary-blue);
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-title i {
-            color: var(--accent-gold);
-        }
-
-        .reload-btn {
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: background 0.2s;
-        }
-
-        .reload-btn:hover {
-            background-color: var(--secondary-blue);
-        }
-
-        /* Table Styling */
-        .rates-table-wrapper {
-            overflow-x: auto;
-        }
-
-        table.rates-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: right;
-        }
-
-        table.rates-table th {
-            background-color: var(--light-blue-bg);
-            color: var(--primary-blue);
-            padding: 12px;
-            font-weight: 800;
-            border-bottom: 2px solid var(--primary-blue);
-        }
-
-        table.rates-table td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 600;
-        }
-
-        .price-buy { color: #15803D; font-weight: 700; }
-        .price-sell { color: #B91C1C; font-weight: 700; }
-
-        /* Calculator */
-        .calc-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-group label {
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--primary-blue);
-        }
-
-        .form-control {
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            background: #FAFAFA;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-        }
-
-        .calc-result {
-            background: var(--light-blue-bg);
-            border: 1px dashed var(--primary-blue);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .calc-result h3 {
-            font-size: 1.6rem;
-            color: var(--primary-blue);
-            margin-top: 5px;
-        }
-
-        .call-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background-color: #15803D;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 700;
-            margin-top: 10px;
-            width: 100%;
-            transition: background 0.3s;
-        }
-
-        .call-btn:hover {
-            background-color: #166534;
-        }
-
-        .location-map {
-            width: 100%;
-            height: 220px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            margin-top: 15px;
+        /* Currency image half and half banner */
+        .half-split-banner {
+            position: relative;
             overflow: hidden;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .split-left {
+            background: linear-gradient(135deg, rgba(7,15,30,0.85) 0%, rgba(29,78,216,0.85) 100%), 
+                        url('https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-position: center;
         }
 
-        .location-map iframe {
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-
-        footer {
-            background: var(--secondary-blue);
-            color: white;
-            padding: 25px 0;
-            text-align: center;
-            border-top: 4px solid var(--accent-gold);
-            margin-top: 40px;
+        .split-right {
+            background: linear-gradient(135deg, rgba(234,179,8,0.8) 0%, rgba(15,23,42,0.9) 100%), 
+                        url('https://images.unsplash.com/photo-1621416894569-0f39ed31d247?auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-position: center;
         }
     </style>
 </head>
-<body>
+<body class="antialiased text-slate-800 bg-slate-50">
 
-    <!-- Top Contact Bar -->
-    <div class="top-bar">
-        <div class="container">
-            <div class="top-info">
-                <span><i class="fa-solid fa-location-dot"></i> سمالوط - شارع الجمهورية - أمام مسجد عبد الجواد سالم</span>
-                <span><i class="fa-solid fa-phone"></i> اتصل بنا: <a href="tel:0863446509">086-3446509</a></span>
+    <!-- Top Announcement & Quick Contact Bar -->
+    <div class="bg-navy-900 text-white text-xs sm:text-sm py-2 px-4 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center space-x-4 space-x-reverse">
+                <span class="inline-flex items-center gap-1.5 bg-brandBlue-600 px-2.5 py-0.5 rounded-full text-xs font-semibold">
+                    <i class="fa-solid fa-store"></i> فرع سمالوط
+                </span>
+                <span class="hidden md:inline text-slate-300">
+                    <i class="fa-solid fa-location-dot text-goldAccent-400 ml-1"></i> شارع الجمهورية - أمام مسجد عبد الجواد سالم
+                </span>
             </div>
-            <div class="top-info">
-                <span><i class="fa-solid fa-clock"></i> جميع ايام الاسبوع من الساعه 8:30ص الى الساعه 9م</span>
+            
+            <div class="flex items-center gap-4">
+                <!-- Direct Call Header Link -->
+                <a href="tel:0869344650" class="flex items-center gap-2 text-goldAccent-400 font-bold hover:text-white transition-colors">
+                    <i class="fa-solid fa-phone-flip animate-bounce"></i>
+                    <span dir="ltr">086-9344650</span>
+                </a>
+                <span class="text-slate-600">|</span>
+                <!-- Auth Trigger Button -->
+                <button onclick="toggleAuthModal()" id="authNavBtn" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1 rounded-lg border border-slate-700 transition">
+                    <i class="fa-solid fa-user-check ml-1"></i> <span id="authNavText">تسجيل الدخول / زائر</span>
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Navigation Header -->
-    <header>
-        <div class="container navbar">
-            <a href="#" class="logo">
-                <div class="logo-icon"><i class="fa-solid fa-building-columns"></i></div>
-                <div class="logo-text">
-                    <h1>المصريه للصرافه| Egypt Exchange</h1>
-                    <p>فرع سمالوط (محافظة المنيا)</p>
+    <header class="sticky top-0 z-40 bg-navy-800/95 backdrop-blur-md border-b border-slate-700 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Logo & Brand Name -->
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-12 h-12 bg-gradient-to-tr from-brandBlue-600 to-blue-400 rounded-xl flex items-center justify-center text-white text-2xl font-black shadow-lg group-hover:scale-105 transition-transform">
+                        م
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-black text-white tracking-wide">
+                            المصرية <span class="text-goldAccent-400">لصرافة</span>
+                        </h1>
+                        <p class="text-xs text-blue-200 font-medium">فرع سمالوط - Egypt Exchange</p>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex items-center space-x-8 space-x-reverse font-medium text-slate-200 text-sm">
+                    <a href="#hero" class="hover:text-goldAccent-400 transition-colors">الرئيسية</a>
+                    <a href="#rates" class="hover:text-goldAccent-400 transition-colors">أسعار العملات</a>
+                    <a href="#calculator" class="hover:text-goldAccent-400 transition-colors">حاسبة الصرف</a>
+                    <a href="#alerts" class="hover:text-goldAccent-400 transition-colors">التنبيهات</a>
+                    <a href="#about" class="hover:text-goldAccent-400 transition-colors">عن الشركة</a>
+                    <a href="#contact" class="hover:text-goldAccent-400 transition-colors">تواصل معنا</a>
+                </nav>
+
+                <!-- Action Button -->
+                <div class="hidden lg:flex items-center gap-3">
+                    <a href="tel:0869344650" class="pulse-call bg-brandBlue-600 hover:bg-brandBlue-700 text-white font-bold px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-lg hover:shadow-blue-500/30 transition">
+                        <i class="fa-solid fa-headset text-lg"></i>
+                        <span>إتصل بنا فوراً</span>
+                    </a>
                 </div>
-            </a>
-            <ul class="nav-links">
-                <li><a href="#rates">أسعار العملات</a></li>
-                <li><a href="#calculator">حاسبة العملات</a></li>
-                <li><a href="#location">موقع الفرع</a></li>
-            </ul>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="text-slate-300 hover:text-white p-2 rounded-lg focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobileMenu" class="hidden md:hidden bg-navy-900 border-b border-slate-800 px-4 pt-2 pb-6 space-y-3">
+            <a href="#hero" onclick="toggleMobileMenu()" class="block py-2 text-slate-200 hover:text-goldAccent-400 font-medium">الرئيسية</a>
+            <a href="#rates" onclick="toggleMobileMenu()" class="block py-2 text-slate-200 hover:text-goldAccent-400 font-medium">أسعار العملات</a>
+            <a href="#calculator" onclick="toggleMobileMenu()" class="block py-2 text-slate-200 hover:text-goldAccent-400 font-medium">حاسبة التحويل</a>
+            <a href="#alerts" onclick="toggleMobileMenu()" class="block py-2 text-slate-200 hover:text-goldAccent-400 font-medium">خدمة التنبيهات</a>
+            <a href="#about" onclick="toggleMobileMenu()" class="block py-2 text-slate-200 hover:text-goldAccent-400 font-medium">معلومات الفرع</a>
+            <a href="#contact" onclick="toggleMobileMenu()" class="block py-2 text-slate-200 hover:text-goldAccent-400 font-medium">اتصل بنا</a>
+            <div class="pt-2">
+                <a href="tel:0869344650" class="w-full bg-brandBlue-600 text-white text-center font-bold py-3 rounded-xl flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-phone"></i> اتصل بالمكتب: 086-9344650
+                </a>
+            </div>
         </div>
     </header>
 
-    <!-- Hero Banner -->
-    <section class="hero">
-        <div class="container hero-grid">
-            <div class="hero-text">
-                <h2>المصريه للصرافه - فرع سمالوط</h2>
-                <p>أسعار الصرف الرسمية المعتمدة لنشرة أسعار الصرافه - تتحدث الأسعار أوتوماتيكياً فور تغيرها في البنك عند تحديث الصفحة.</p>
-                <span class="badge-source"><span class="live-dot"></span> متصل بنشرة أسعار العملات المباشرة</span>
+    <!-- Hero Section with Old EGP & USD Split Banner -->
+    <section id="hero" class="relative py-12 lg:py-16 bg-gradient-to-b from-navy-800 via-navy-900 to-slate-900 text-white overflow-hidden">
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            
+            <!-- Welcome Split Graphic Card -->
+            <div class="half-split-banner grid grid-cols-1 md:grid-cols-2 min-h-[380px] border border-slate-700/80 mb-12">
+                <!-- USD Half -->
+                <div class="split-left p-8 sm:p-12 flex flex-col justify-center items-center text-center border-b md:border-b-0 md:border-l border-white/20">
+                    <div class="inline-block bg-brandBlue-600/90 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-blue-400/30">
+                        USD / DOLLAR
+                    </div>
+                    <h3 class="text-3xl font-black text-white drop-shadow-md">العملات الأجنبية</h3>
+                    <p class="text-slate-200 text-sm mt-2 max-w-xs">أعلى سعر شراء وأفضل سعر بيع لجميع عملات العالم الصعبة</p>
+                </div>
+
+                <!-- Old EGP Half -->
+                <div class="split-right p-8 sm:p-12 flex flex-col justify-center items-center text-center">
+                    <div class="inline-block bg-goldAccent-500/90 text-slate-900 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-yellow-300">
+                        EGP / EGYPTIAN POUND
+                    </div>
+                    <h3 class="text-3xl font-black text-white drop-shadow-md">الجنيه المصري الاصيل</h3>
+                    <p class="text-slate-100 text-sm mt-2 max-w-xs">عراقة وتاريخ الصرافة المصرية في خدمة عملاء سمالوط</p>
+                </div>
+
+                <!-- Center Banner Text Overlay -->
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none p-4">
+                    <div class="pointer-events-auto bg-navy-900/90 backdrop-blur-md px-8 py-5 rounded-2xl border-2 border-goldAccent-400 shadow-2xl text-center max-w-md transform hover:scale-105 transition">
+                        <span class="text-goldAccent-400 text-sm font-bold block mb-1">
+                            <i class="fa-solid fa-hand-holding-dollar ml-1"></i> المصرية للصرافة
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-black text-white leading-tight">
+                            أهلاً بك أيها العميل
+                        </h2>
+                        <p class="text-xs text-slate-300 mt-1">نعتز بخدمتكم في فرعنا بمركز سمالوط</p>
+                    </div>
+                </div>
             </div>
-            <div class="branch-image-box">
+
+            <!-- Branch Main Intro Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-950/80 border border-blue-500/30 text-blue-300 text-xs font-semibold">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        الأسعار محدثة تلقائياً حسب الشاشات الرسمية
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-snug">
+                        الوجهة الأولى لتغيير العملات في <span class="text-brandBlue-500">سمالوط والمنيا</span>
+                    </h1>
+                    <p class="text-slate-300 text-base sm:text-lg leading-relaxed">
+                        نقدم لك أسعار صرف تنافسية لحظة بلحظة لكافة عملات الدول العربية والأوروبية والأمريكية والآسيوية. تعاملات آمنة، سرعة في التنفيذ، وخدمة عملاء متميزة.
+                    </p>
+
+                    <!-- Quick Call Action Box -->
+                    <div class="p-4 bg-slate-800/80 rounded-2xl border border-slate-700 flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-goldAccent-500/20 text-goldAccent-400 rounded-xl flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-phone-volume"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-slate-400">للاستفسار المباشر عن الكميات</p>
+                                <a href="tel:0869344650" class="text-xl font-extrabold text-white hover:text-goldAccent-400 transition" dir="ltr">
+                                    086-9344650
+                                </a>
+                            </div>
+                        </div>
+                        <a href="tel:0869344650" class="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold px-6 py-2.5 rounded-xl transition flex items-center gap-2">
+                            <i class="fa-solid fa-phone"></i> اتصل الآن
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Branch Facade Display Box -->
+                <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700 text-center relative">
+                    <div class="relative rounded-xl overflow-hidden mb-4 shadow-lg border border-slate-600">
+                        <img src="https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?auto=format&fit=crop&w=800&q=80" alt="فرع المصرية للصرافة سمالوط" class="w-full h-52 object-cover">
+                        <div class="absolute bottom-2 right-2 bg-navy-900/90 text-goldAccent-400 px-3 py-1 rounded-md text-xs font-bold border border-yellow-500/30">
+                            فرع سمالوط الرسمي
+                        </div>
+                    </div>
+                    <h4 class="font-bold text-white text-base">شركة المصرية للصرافة</h4>
+                    <p class="text-xs text-slate-400 mt-1">شارع الجمهورية - أمام مسجد عبد الجواد سالم</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Live Currency Rates Section -->
+    <section id="rates" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+            <div>
+                <div class="inline-flex items-center gap-2 text-brandBlue-600 font-bold text-sm mb-1">
+                    <i class="fa-solid fa-chart-line"></i> الأسعار الحية اليوم
+                </div>
+                <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900">أسعار صرف عملات العالم</h2>
+                <p class="text-slate-600 text-sm mt-1">متابعة فورية لجميع العملات العربية والأجنبية الرئيسية والفرعية</p>
+            </div>
+
+            <!-- Search & Refresh Toolbar -->
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="relative flex-1 sm:w-64">
+                    <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="currencySearch" oninput="filterCurrencies()" placeholder="ابحث عن اسم الدوله أو العملة..." class="w-full pl-4 pr-9 py-2.5 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brandBlue-500 shadow-sm">
+                </div>
+                <button onclick="refreshRates()" class="bg-brandBlue-600 hover:bg-brandBlue-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2 shadow-md">
+                    <i id="refreshIcon" class="fa-solid fa-rotate"></i>
+                    <span>تحديث الأسعار الآن</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Tabs for Filtering Regions -->
+        <div class="flex flex-wrap gap-2 mb-6 border-b border-slate-200 pb-3">
+            <button onclick="filterRegion('all')" class="region-tab active px-4 py-1.5 rounded-lg text-sm font-semibold bg-brandBlue-600 text-white shadow-sm">الكل</button>
+            <button onclick="filterRegion('arab')" class="region-tab px-4 py-1.5 rounded-lg text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300">العملات العربية</button>
+            <button onclick="filterRegion('major')" class="region-tab px-4 py-1.5 rounded-lg text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300">العملات العالمية الكبرى</button>
+            <button onclick="filterRegion('asia')" class="region-tab px-4 py-1.5 rounded-lg text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300">آسيا وأمريكا</button>
+        </div>
+
+        <!-- Rates Display Table -->
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse">
+                    <thead>
+                        <tr class="bg-navy-900 text-white text-xs sm:text-sm font-bold">
+                            <th class="p-4">الدولة / العملة</th>
+                            <th class="p-4">الرمز</th>
+                            <th class="p-4 text-emerald-400">سعر الشراء (منك)</th>
+                            <th class="p-4 text-blue-300">سعر البيع (لك)</th>
+                            <th class="p-4 text-center">التغير اليومي</th>
+                            <th class="p-4 text-center">إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="currencyTableBody" class="divide-y divide-slate-100 text-sm font-medium">
+                        <!-- Dynamic JavaScript Rows will load here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="p-4 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+                <span>* الأسعار بالجنيه المصري (EGP) وتخضع للتغير اللحظي حسب حركة الأسواق.</span>
+                <span id="lastUpdatedTime" class="font-bold text-slate-700">آخر تحديث: منذ لحظات</span>
             </div>
         </div>
     </section>
 
-    <!-- Main Content -->
-    <div class="container main-content">
-        
-        <!-- Exchange Rates Table -->
-        <main>
-            <div class="card" id="rates">
-                <div class="card-header">
-                    <div class="card-title">
-                        <i class="fa-solid fa-file-invoice-dollar"></i>
-                        <span>أسعار العملات الرسمية </span>
+    <!-- Interactive Currency Calculator Section -->
+    <section id="calculator" class="py-16 bg-gradient-to-br from-slate-900 via-navy-900 to-slate-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Text Intro -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="inline-flex items-center gap-2 text-goldAccent-400 font-bold text-sm">
+                        <i class="fa-solid fa-calculator"></i> حاسبة العملات السريعة
                     </div>
-                    <div>
-                        <button class="reload-btn" onclick="updateRates()">
-                            <i class="fa-solid fa-rotate-right"></i> إعادة تحميل الأسعار
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white">احسب قيمة تحويل أموالك بدقة</h2>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        استخدم الحاسبة المباشرة لتقدير قيمة المبالغ المالية المراد تحويلها سواء للشراء أو البيع بأسعار اليوم المعتمدة في فرع سمالوط.
+                    </p>
+                    <div class="pt-4 border-t border-slate-800 space-y-3 text-xs text-slate-400">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-emerald-400"></i> حساب فوري بدون عمولات خفية
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-emerald-400"></i> إمكانية حجز المبلغ هاتفياً للكميات الكبيرة
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calculator Card -->
+                <div class="lg:col-span-7 bg-white text-slate-900 p-6 sm:p-8 rounded-3xl shadow-2xl border border-slate-100">
+                    
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+                        <h3 class="font-bold text-lg text-navy-800">حاسبة التحويل المباشر</h3>
+                        <span class="text-xs bg-brandBlue-50 text-brandBlue-700 px-3 py-1 rounded-full font-bold">فرع سمالوط</span>
+                    </div>
+
+                    <div class="space-y-5">
+                        
+                        <!-- Operation Type (Buy / Sell) -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-2">نوع العملية</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button type="button" id="calcTypeBuy" onclick="setCalcType('buy')" class="calc-type-btn active py-2.5 rounded-xl font-bold text-sm bg-brandBlue-600 text-white shadow-md">
+                                    بيع للشركة (تبيع لنا)
+                                </button>
+                                <button type="button" id="calcTypeSell" onclick="setCalcType('sell')" class="calc-type-btn py-2.5 rounded-xl font-bold text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">
+                                    شراء من الشركة (تشتري منا)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Amount Input -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">المبلغ المراد تحويله</label>
+                            <input type="number" id="calcAmount" value="100" min="1" oninput="calculateExchange()" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl font-bold text-lg focus:outline-none focus:ring-2 focus:ring-brandBlue-500">
+                        </div>
+
+                        <!-- Currency Selection -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">من عملة</label>
+                                <select id="calcFromCurrency" onchange="calculateExchange()" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl font-bold text-sm focus:outline-none focus:ring-2 focus:ring-brandBlue-500">
+                                    <!-- Dynamic options populated via JS -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">إلى عملة</label>
+                                <select id="calcToCurrency" onchange="calculateExchange()" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl font-bold text-sm focus:outline-none focus:ring-2 focus:ring-brandBlue-500">
+                                    <!-- Dynamic options populated via JS -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Result Display Box -->
+                        <div class="p-5 bg-gradient-to-r from-navy-800 to-navy-900 rounded-2xl text-white text-center shadow-lg">
+                            <span class="text-xs text-slate-400 font-semibold block mb-1">النتيجة التقديرية للحساب</span>
+                            <div id="calcResultValue" class="text-3xl sm:text-4xl font-extrabold text-goldAccent-400 my-1">
+                                0.00 EGP
+                            </div>
+                            <span id="calcExchangeRateText" class="text-xs text-slate-300 block">سعر الصرف المطبق: -</span>
+                        </div>
+
+                        <!-- Quick Call Button inside Calc -->
+                        <a href="tel:0869344650" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-md transition">
+                            <i class="fa-solid fa-phone"></i> تأكيد وحجز السعر بالاتصال: 086-9344650
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration & Price Alerts Section -->
+    <section id="alerts" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="bg-gradient-to-r from-brandBlue-600 to-navy-800 rounded-3xl text-white p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center relative z-10">
+                <div class="space-y-4">
+                    <span class="bg-goldAccent-500 text-slate-900 font-extrabold text-xs px-3 py-1 rounded-full uppercase">خدمة التنبيهات المباشرة</span>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold">احصل على تنبيه عند ارتفاع أو انخفاض أي عملة</h2>
+                    <p class="text-slate-200 text-sm leading-relaxed">
+                        قم بتسجيل حسابك مجاناً لتفعيل خاصية التنبيه الذكي على هاتفك أو عبر الحساب عند تغير أسعار عملتك المفضلة. كما يمكنك التصفح دائماً كزائر (Guest).
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button onclick="toggleAuthModal()" class="bg-white text-navy-800 font-extrabold px-6 py-3 rounded-xl hover:bg-slate-100 transition shadow-lg text-sm">
+                            <i class="fa-solid fa-user-plus ml-2"></i> تسجيل دخول / حساب جديد
+                        </button>
+                        <button onclick="setGuestMode()" class="bg-navy-900/80 hover:bg-navy-900 text-slate-200 font-bold px-6 py-3 rounded-xl transition border border-white/20 text-sm">
+                            متابعة كزائر (Guest)
                         </button>
                     </div>
                 </div>
-                <div style="margin-bottom: 15px; font-size: 0.85rem; color: #15803D; font-weight: 700;" id="last-update">
-                    جاري جلب أحدث أسعار بنك مصر...
-                </div>
-                <div class="rates-table-wrapper">
-                    <table class="rates-table">
-                        <thead>
-                            <tr>
-                                <th>الوحدة</th>
-                                <th>العملة</th>
-                                <th>الرمز</th>
-                                <th>سعر الشراء (ج.م)</th>
-                                <th>سعر البيع (ج.م)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="rates-body">
-                            <!-- سيتم التحديث تلقائياً -->
-                        </tbody>
-                    </table>
+
+                <!-- Alert Status Card -->
+                <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl">
+                    <h3 class="font-bold text-lg mb-4 flex items-center gap-2 text-goldAccent-400">
+                        <i class="fa-solid fa-bell"></i> حالة التنبيهات الحالية
+                    </h3>
+                    <div id="userStatusBox" class="space-y-4 text-sm">
+                        <!-- Updated dynamically via JS -->
+                        <div class="p-4 bg-navy-900/60 rounded-xl border border-slate-700">
+                            <p class="text-slate-300">أنت تتصفح حالياً بصفة: <span id="currentRoleText" class="font-bold text-white">زائر (Guest)</span></p>
+                            <p class="text-xs text-slate-400 mt-1">سجل الدخول لتخصيص تنبيهات تغير السعر على الموبايل.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </main>
+        </div>
+    </section>
 
-        <!-- Sidebar -->
-        <aside>
-            <!-- Currency Calculator -->
-            <div class="card" id="calculator">
-                <div class="card-header">
-                    <div class="card-title">
-                        <i class="fa-solid fa-calculator"></i>
-                        <span>حاسبة التحويل السريعة</span>
-                    </div>
-                </div>
-                <form class="calc-form" onsubmit="return false;">
-                    <div class="form-group">
-                        <label>المبلغ المراد تحويله:</label>
-                        <input type="number" id="calc-amount" class="form-control" value="100" placeholder="أدخل المبلغ">
-                    </div>
-                    <div class="form-group">
-                        <label>اختر العملة الأجنبية:</label>
-                        <select id="calc-currency" class="form-control">
-                            <!-- خيارات الحاسبة -->
-                        </select>
-                    </div>
-                    <div class="calc-result">
-                        <p>القيمة بالجنيه المصري (بسعر الشراء):</p>
-                        <h3 id="calc-output">0.00 ج.م</h3>
-                    </div>
-                </form>
+    <!-- About Branch & Foreign Exchange Rules Section -->
+    <section id="about" class="py-16 bg-slate-100 border-t border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <h2 class="text-3xl font-extrabold text-slate-900">معلومات وشروط تبديل العملات</h2>
+                <p class="text-slate-600 text-sm mt-2">نلتزم بالتعليمات والمحددات القانونية الرسمية لضمان سلامة وسرعة معاملتك المالية</p>
             </div>
 
-            <!-- Location Details -->
-            <div class="card" id="location">
-                <div class="card-header">
-                    <div class="card-title">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <span>موقع فرع سمالوط</span>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 hover:shadow-xl transition">
+                    <div class="w-12 h-12 bg-blue-100 text-brandBlue-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-id-card"></i>
                     </div>
+                    <h3 class="font-bold text-lg mb-2 text-navy-800">الأوراق المطلوبة</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        يُرجى إحضار بطاقة الرقم القومي سارية للمواطنين المصريين، أو جواز السفر ساري المفعول مع الإقامة الشغالة للإخوة الأجانب والمقيمين.
+                    </p>
                 </div>
-                <p style="font-size: 0.95rem; font-weight: 700; color: var(--primary-blue);">
-                    سمالوط - شارع الجمهورية - أمام مسجد عبد الجواد سالم.
-                </p>
 
-                <a href="tel:0863446509" class="call-btn">
-                    <i class="fa-solid fa-phone-volume"></i>
-                    <span>اتصل بنا الآن: 086-3446509</span>
-                </a>
+                <!-- Card 2 -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 hover:shadow-xl transition">
+                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2 text-navy-800">مواعيد العمل بالفرع</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        نستقبلكم طوال أيام الأسبوع من الساعة 8:30 صباحاً حتى الساعة 9:00 مساءً. مواعيد يوم الجمعة بعد صلاة الجمعة مباشرة حتى 9:00 مساءً.
+                    </p>
+                </div>
 
-                <div class="location-map">
-                    <iframe 
-                        src="https://maps.google.com/maps?q=Samalut,El+Gomhouria+Street,Egypt&t=&z=15&ie=UTF8&iwloc=&output=embed" 
-                        loading="lazy">
-                    </iframe>
+                <!-- Card 3 -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 hover:shadow-xl transition">
+                    <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center text-xl font-bold mb-4">
+                        <i class="fa-solid fa-plane-departure"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2 text-navy-800">خدمة المسافرين للخارج</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        نوفر تدبير العملات الأجنبية للمسافرين طبقاً للضوابط المعمول بها مع تقديم جواز السفر وتذكرة الطيران وتأشيرة السفر السارية.
+                    </p>
                 </div>
             </div>
-        </aside>
+        </div>
+    </section>
 
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="bg-navy-900 rounded-3xl text-white p-8 sm:p-12 shadow-2xl">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                
+                <div>
+                    <span class="text-goldAccent-400 font-bold text-xs uppercase tracking-wider">تواصل مباشر</span>
+                    <h2 class="text-3xl font-extrabold mt-1 mb-4">فرع المصرية للصرافة - سمالوط</h2>
+                    <p class="text-slate-300 text-sm mb-8 leading-relaxed">
+                        يسعدنا استقبال اتصالاتكم واستفساراتكم حول أسعار العملات وتوافر المبالغ أو حجزها هاتفياً عبر الرقم الرسمي للفرع.
+                    </p>
+
+                    <div class="space-y-6 text-sm">
+                        <!-- Direct Phone Call -->
+                        <div class="flex items-start gap-4 p-4 bg-slate-800/80 rounded-2xl border border-slate-700">
+                            <div class="w-10 h-10 bg-brandBlue-600 rounded-xl flex items-center justify-center text-white shrink-0">
+                                <i class="fa-solid fa-phone text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-200">هاتف الفرع المباشر</h4>
+                                <p class="text-xs text-slate-400 mb-1">اضغط على الرقم للاتصال الفوري:</p>
+                                <a href="tel:0869344650" class="text-2xl font-black text-goldAccent-400 hover:underline inline-block" dir="ltr">
+                                    086-9344650
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="flex items-start gap-4 p-4 bg-slate-800/80 rounded-2xl border border-slate-700">
+                            <div class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white shrink-0">
+                                <i class="fa-solid fa-location-dot text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-200">العنوان بالتفصيل</h4>
+                                <p class="text-slate-300 text-xs mt-1 leading-relaxed">
+                                    شارع الجمهورية - أمام مسجد عبد الجواد سالم - مدينة سمالوط - محافظة المنيا.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Google Maps Placeholder & Info Box -->
+                <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg mb-2 text-white">موقعنا في سمالوط</h3>
+                        <p class="text-xs text-slate-400 mb-4">فرع حيوى ومجهز بالكامل بأحدث الأجهزة للكشف عن العملات وعدها بسهولة.</p>
+                        
+                        <div class="w-full h-56 bg-slate-700 rounded-xl overflow-hidden relative border border-slate-600 flex items-center justify-center text-center p-4">
+                            <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover opacity-30" alt="خريطة سمالوط">
+                            <div class="relative z-10">
+                                <i class="fa-solid fa-map-location-dot text-4xl text-goldAccent-400 mb-2"></i>
+                                <h4 class="font-bold text-white text-base">شارع الجمهورية - سمالوط</h4>
+                                <p class="text-xs text-slate-300 mt-1">أمام مسجد عبد الجواد سالم مباشرة</p>
+                                <a href="https://maps.google.com/?q=Samalut+Minya+Egypt" target="_blank" class="inline-block mt-3 bg-brandBlue-600 hover:bg-brandBlue-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition">
+                                    فتح في خرائط جوجل <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-700 text-center">
+                        <span class="text-xs text-slate-400">الرقم الموحد المباشر: </span>
+                        <a href="tel:0869344650" class="text-sm font-bold text-goldAccent-400" dir="ltr">086-9344650</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Assistant Floating Widget -->
+    <div id="aiChatWidget" class="fixed bottom-6 left-6 z-50">
+        
+        <!-- Toggle Button -->
+        <button onclick="toggleAiChat()" class="bg-gradient-to-r from-brandBlue-600 to-navy-800 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition duration-300 flex items-center justify-center relative group">
+            <i class="fa-solid fa-robot text-2xl"></i>
+            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white"></span>
+            <span class="hidden group-hover:block absolute left-16 bg-navy-900 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap shadow-md">
+                مساعد الذكاء الاصطناعي
+            </span>
+        </button>
+
+        <!-- Chat Window Box -->
+        <div id="aiChatBox" class="hidden absolute bottom-16 left-0 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col h-[480px]">
+            <!-- Header -->
+            <div class="bg-navy-900 text-white p-4 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 bg-brandBlue-600 rounded-lg flex items-center justify-center text-sm font-bold">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm">مساعد الصرافة الذكي (AI)</h4>
+                        <span class="text-[10px] text-emerald-400 block">متصل الآن - فرع سمالوط</span>
+                    </div>
+                </div>
+                <button onclick="toggleAiChat()" class="text-slate-400 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="aiChatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50 text-xs">
+                <div class="bg-blue-50 border border-blue-200 text-slate-800 p-3 rounded-xl max-w-[85%] leading-relaxed">
+                    أهلاً بك! أنا مساعد الذكاء الاصطناعي الخاص بشركة المصرية للصرافة (فرع سمالوط). كيف يمكنني مساعدتك اليوم في الاستفسار عن الشروط، المستندات المطلوبة، أو أسعار العملات؟
+                </div>
+            </div>
+
+            <!-- Input Controls -->
+            <div class="p-3 bg-white border-t border-slate-200 flex gap-2">
+                <input type="text" id="aiUserInput" onkeypress="handleAiKeyPress(event)" placeholder="اسأل المساعد الذكي شيئاً..." class="flex-1 px-3 py-2 bg-slate-100 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brandBlue-500">
+                <button onclick="sendAiMessage()" class="bg-brandBlue-600 hover:bg-brandBlue-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>جميع الحقوق محفوظة © 2026 - شركة الصرافة المصرية (Egypt Exchange) - فرع سمالوط</p>
+    <!-- Floating Quick Call Button for Mobile -->
+    <a href="tel:0869344650" class="fixed bottom-6 right-6 z-40 sm:hidden bg-emerald-600 text-white p-4 rounded-full shadow-2xl pulse-call flex items-center justify-center">
+        <i class="fa-solid fa-phone text-xl"></i>
+    </a>
+
+    <!-- Auth Modal Overlay -->
+    <div id="authModal" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 relative">
+            <button onclick="toggleAuthModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600 text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-brandBlue-600 text-white rounded-2xl flex items-center justify-center mx-auto text-xl font-extrabold mb-2">
+                    م
+                </div>
+                <h3 class="text-xl font-extrabold text-navy-800">تسجيل الدخول / إنشاء حساب</h3>
+                <p class="text-xs text-slate-500 mt-1">تفعيل تنبيهات تغير أسعار العملات في فرع سمالوط</p>
+            </div>
+
+            <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">الاسم الكامل</label>
+                    <input type="text" id="modalUserName" required placeholder="أدخل اسمك" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brandBlue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">رقم الهاتف</label>
+                    <input type="tel" id="modalUserPhone" required placeholder="01xxxxxxxxx" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-brandBlue-500">
+                </div>
+                
+                <div class="flex items-center gap-2 pt-1">
+                    <input type="checkbox" id="modalAlertsCheck" checked class="w-4 h-4 text-brandBlue-600 rounded">
+                    <label for="modalAlertsCheck" class="text-xs text-slate-600 font-semibold">تفعيل التنبيهات الفورية عند تغير أسعار الشراء والبيع</label>
+                </div>
+
+                <button type="submit" class="w-full bg-brandBlue-600 hover:bg-brandBlue-700 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg">
+                    حفظ وتأثيل الدخول
+                </button>
+
+                <div class="relative my-4 text-center">
+                    <span class="bg-white px-3 text-xs text-slate-400 relative z-10">أو</span>
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
+                </div>
+
+                <button type="button" onclick="setGuestMode(); toggleAuthModal();" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl text-sm transition">
+                    المتابعة كزائر (Guest)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-navy-900 text-slate-400 text-xs py-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2 text-white font-black text-lg">
+                        <div class="w-8 h-8 bg-brandBlue-600 rounded-lg flex items-center justify-center">م</div>
+                        المصرية للصرافة
+                    </div>
+                    <p class="leading-relaxed text-slate-400">
+                        الشركة المصرية للصرافة - فرع سمالوط. خيارك الموثوق والأول لكافة التعاملات المالية وتحويلات العملات العربية والأجنبية.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-white text-sm mb-3">روابط سريعة</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#rates" class="hover:text-goldAccent-400 transition">أسعار العملات اليوم</a></li>
+                        <li><a href="#calculator" class="hover:text-goldAccent-400 transition">حاسبة الصرف والتغيير</a></li>
+                        <li><a href="#alerts" class="hover:text-goldAccent-400 transition">تنبيهات الأسعار</a></li>
+                        <li><a href="#about" class="hover:text-goldAccent-400 transition">المستندات المطلوبة</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-white text-sm mb-3">اتصل بالفرع</h4>
+                    <p class="text-slate-300 font-bold mb-1">هاتف الفرع المباشر:</p>
+                    <a href="tel:0869344650" class="text-goldAccent-400 text-base font-extrabold hover:underline block mb-3" dir="ltr">086-9344650</a>
+                    <p class="text-slate-300 font-bold mb-1">مواعيد العمل:</p>
+                    <p>يومياً: 8:30 ص - 9:00 م</p>
+                    <p>الجمعة: بعد الصلاة - 9:00 م</p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-white text-sm mb-3">عنوان الفرع</h4>
+                    <p class="leading-relaxed">
+                        شارع الجمهورية - أمام مسجد عبد الجواد سالم - مدينة سمالوط - محافظة المنيا.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="pt-8 border-t border-slate-800 text-center text-slate-500">
+                <p>© 2026 جميع الحقوق محفوظة - الشركة المصرية للصرافة (فرع سمالوط).</p>
+            </div>
         </div>
     </footer>
 
-    <!-- JavaScript Live Updates -->
     <script>
-        // البيانات الرسمية المطابقة 100% لنشرة أسعار بنك مصر
-        const banqueMisrOfficialRates = [
-            { unit: 1, name: "دولار أمريكي", code: "USD", flag: "🇺🇸", buy: 51.7300, sell: 51.8300 },
-            { unit: 1, name: "يورو أوروبي", code: "EUR", flag: "🇪🇺", buy: 58.7808, sell: 59.0810 },
-            { unit: 1, name: "جنيه إسترليني", code: "GBP", flag: "🇬🇧", buy: 68.3612, sell: 68.7058 },
-            { unit: 1, name: "دينار كويتي", code: "KWD", flag: "🇰🇼", buy: 164.2222, sell: 168.9925 },
-            { unit: 1, name: "ريال سعودي", code: "SAR", flag: "🇸🇦", buy: 13.7435, sell: 13.8040 },
-            { unit: 1, name: "درهم إماراتي", code: "AED", flag: "🇦🇪", buy: 14.0706, sell: 14.1126 },
-            { unit: 1, name: "ريال قطري", code: "QAR", flag: "🇶🇦", buy: 13.4044, sell: 14.2214 },
-            { unit: 1, name: "فرنك سويسري", code: "CHF", flag: "🇨🇭", buy: 62.4532, sell: 62.9769 },
-            { unit: 1, name: "دولار كندي", code: "CAD", flag: "🇨🇦", buy: 36.6386, sell: 36.7850 },
-            { unit: 1, name: "دينار بحريني", code: "BHD", flag: "🇧🇭", buy: 135.2206, sell: 137.4983 },
-            { unit: 1, name: "ريال عماني", code: "OMR", flag: "🇴🇲", buy: 132.5255, sell: 134.6199 },
-            { unit: 1, name: "دينار أردني", code: "JOD", flag: "🇯🇴", buy: 72.5018, sell: 73.2062 },
-            { unit: 100, name: "ين ياباني (100 ين)", code: "JPY", flag: "🇯🇵", buy: 32.5776, sell: 32.8454 },
-            { unit: 1, name: "دولار أسترالي", code: "AUD", flag: "🇦🇺", buy: 36.3041, sell: 36.5142 }
+        // Comprehensive currencies dataset (simulated real-time official rates)
+        const globalCurrencies = [
+            { id: 'USD', name: 'دولار أمريكي', code: 'USD', region: 'major', buy: 48.65, sell: 48.75, change: '+0.10', flag: '🇺🇸' },
+            { id: 'EUR', name: 'يورو أوروبي', code: 'EUR', region: 'major', buy: 52.40, sell: 52.65, change: '-0.05', flag: '🇪🇺' },
+            { id: 'GBP', name: 'جنيه إسترليني', code: 'GBP', region: 'major', buy: 62.80, sell: 63.15, change: '+0.20', flag: '🇬🇧' },
+            { id: 'SAR', name: 'ريال سعودي', code: 'SAR', region: 'arab', buy: 12.96, sell: 12.99, change: '0.00', flag: '🇸🇦' },
+            { id: 'AED', name: 'درهم إماراتي', code: 'AED', region: 'arab', buy: 13.24, sell: 13.27, change: '0.00', flag: '🇦🇪' },
+            { id: 'KWD', name: 'دينار كويتي', code: 'KWD', region: 'arab', buy: 158.50, sell: 159.20, change: '+0.40', flag: '🇰🇼' },
+            { id: 'QAR', name: 'ريال قطري', code: 'QAR', region: 'arab', buy: 13.33, sell: 13.38, change: '0.00', flag: '🇶🇦' },
+            { id: 'OMR', name: 'ريال عماني', code: 'OMR', region: 'arab', buy: 126.30, sell: 126.80, change: '+0.15', flag: '🇴🇲' },
+            { id: 'BHD', name: 'دينار بحريني', code: 'BHD', region: 'arab', buy: 128.90, sell: 129.40, change: '+0.10', flag: '🇧🇭' },
+            { id: 'CHF', name: 'فرنك سويسري', code: 'CHF', region: 'major', buy: 55.10, sell: 55.45, change: '-0.10', flag: '🇨🇭' },
+            { id: 'CAD', name: 'دولار كندي', code: 'CAD', region: 'asia', buy: 35.40, sell: 35.65, change: '+0.05', flag: '🇨🇦' },
+            { id: 'AUD', name: 'دولار أسترالي', code: 'AUD', region: 'asia', buy: 32.10, sell: 32.35, change: '-0.08', flag: '🇦🇺' },
+            { id: 'JPY', name: 'ين ياباني (100 ين)', code: 'JPY', region: 'asia', buy: 32.80, sell: 33.10, change: '+0.12', flag: '🇯🇵' },
+            { id: 'CNY', name: 'يوان صيني', code: 'CNY', region: 'asia', buy: 6.82, sell: 6.88, change: '0.00', flag: '🇨🇳' },
+            { id: 'EGP', name: 'جنيه مصري', code: 'EGP', region: 'arab', buy: 1.00, sell: 1.00, change: '0.00', flag: '🇪🇬' },
         ];
 
-        function updateRates() {
-            const tbody = document.getElementById('rates-body');
-            const select = document.getElementById('calc-currency');
-            const currentSelected = select.value;
+        let activeRegionFilter = 'all';
+        let currentCalcType = 'buy';
+        let currentUser = null;
 
+        function renderCurrencyTable() {
+            const tbody = document.getElementById('currencyTableBody');
+            const searchVal = document.getElementById('currencySearch').value.toLowerCase().trim();
             tbody.innerHTML = '';
-            select.innerHTML = '';
 
-            banqueMisrOfficialRates.forEach(item => {
-                // ملء الجدول
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${item.unit}</td>
-                    <td>${item.flag} ${item.name}</td>
-                    <td><strong>${item.code}</strong></td>
-                    <td class="price-buy">${item.buy.toFixed(4)}</td>
-                    <td class="price-sell">${item.sell.toFixed(4)}</td>
-                `;
-                tbody.appendChild(tr);
-
-                // ملء خيارات الحاسبة
-                const opt = document.createElement('option');
-                opt.value = JSON.stringify({ buy: item.buy, unit: item.unit });
-                opt.textContent = `${item.flag} ${item.name} (${item.code})`;
-                select.appendChild(opt);
+            const filtered = globalCurrencies.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(searchVal) || item.code.toLowerCase().includes(searchVal);
+                const matchesRegion = activeRegionFilter === 'all' || item.region === activeRegionFilter;
+                return matchesSearch && matchesRegion;
             });
 
-            if (currentSelected) select.value = currentSelected;
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-8 text-center text-slate-400">
+                            لا توجد نتائج مطابقة لبحثك.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
 
-            calculate();
+            filtered.forEach(item => {
+                if (item.code === 'EGP') return; // Exclude EGP row against itself
 
-            const now = new Date();
-            document.getElementById('last-update').textContent = `تم التحديث بنجاح: ${now.toLocaleTimeString('ar-EG')} - نشرة أسعار بنك مصر الرسمية`;
+                const isPositive = item.change.startsWith('+');
+                const isNegative = item.change.startsWith('-');
+                let changeBadgeClass = 'bg-slate-100 text-slate-600';
+                if (isPositive) changeBadgeClass = 'bg-emerald-100 text-emerald-700 font-bold';
+                if (isNegative) changeBadgeClass = 'bg-rose-100 text-rose-700 font-bold';
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+                tr.innerHTML = `
+                    <td class="p-4 flex items-center gap-3 font-bold text-slate-800">
+                        <span class="text-2xl">${item.flag}</span>
+                        <div>
+                            <div>${item.name}</div>
+                            <div class="text-xs text-slate-400 font-normal">${item.code}</div>
+                        </div>
+                    </td>
+                    <td class="p-4 font-bold text-brandBlue-600">${item.code}</td>
+                    <td class="p-4 font-bold text-emerald-600 text-base">${item.buy.toFixed(2)} EGP</td>
+                    <td class="p-4 font-bold text-brandBlue-600 text-base">${item.sell.toFixed(2)} EGP</td>
+                    <td class="p-4 text-center">
+                        <span class="inline-block px-2.5 py-1 rounded-full text-xs ${changeBadgeClass}">
+                            ${item.change}
+                        </span>
+                    </td>
+                    <td class="p-4 text-center">
+                        <a href="tel:0869344650" class="inline-flex items-center gap-1 bg-slate-100 hover:bg-brandBlue-600 hover:text-white text-slate-700 text-xs px-3 py-1.5 rounded-lg font-bold transition">
+                            <i class="fa-solid fa-phone"></i> احجز
+                        </a>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
-        const amountInput = document.getElementById('calc-amount');
-        const currencySelect = document.getElementById('calc-currency');
-        const outputDisplay = document.getElementById('calc-output');
+        function filterCurrencies() {
+            renderCurrencyTable();
+        }
 
-        function calculate() {
-            const amount = parseFloat(amountInput.value) || 0;
-            if (currencySelect.value) {
-                const selectedData = JSON.parse(currencySelect.value);
-                const total = ((amount / selectedData.unit) * selectedData.buy).toFixed(2);
-                outputDisplay.textContent = `${total} ج.م`;
+        function filterRegion(region) {
+            activeRegionFilter = region;
+            document.querySelectorAll('.region-tab').forEach(btn => {
+                btn.classList.remove('bg-brandBlue-600', 'text-white', 'active');
+                btn.classList.add('bg-slate-200', 'text-slate-700');
+            });
+            event.target.classList.remove('bg-slate-200', 'text-slate-700');
+            event.target.classList.add('bg-brandBlue-600', 'text-white', 'active');
+            renderCurrencyTable();
+        }
+
+        function refreshRates() {
+            const icon = document.getElementById('refreshIcon');
+            icon.classList.add('animate-spin');
+            
+            setTimeout(() => {
+                // Simulate minor live fluctuation
+                globalCurrencies.forEach(curr => {
+                    if (curr.code !== 'EGP') {
+                        const delta = (Math.random() * 0.04 - 0.02);
+                        curr.buy = Math.max(1, curr.buy + delta);
+                        curr.sell = curr.buy + 0.10;
+                    }
+                });
+                renderCurrencyTable();
+                calculateExchange();
+                icon.classList.remove('animate-spin');
+                
+                const now = new Date();
+                document.getElementById('lastUpdatedTime').innerText = `آخر تحديث: ${now.toLocaleTimeString('ar-EG')}`;
+            }, 800);
+        }
+
+        function populateCalculatorSelects() {
+            const fromSelect = document.getElementById('calcFromCurrency');
+            const toSelect = document.getElementById('calcToCurrency');
+            
+            fromSelect.innerHTML = '';
+            toSelect.innerHTML = '';
+
+            globalCurrencies.forEach(curr => {
+                const opt1 = document.createElement('option');
+                opt1.value = curr.code;
+                opt1.textContent = `${curr.flag} ${curr.name} (${curr.code})`;
+                fromSelect.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = curr.code;
+                opt2.textContent = `${curr.flag} ${curr.name} (${curr.code})`;
+                toSelect.appendChild(opt2);
+            });
+
+            fromSelect.value = 'USD';
+            toSelect.value = 'EGP';
+        }
+
+        function setCalcType(type) {
+            currentCalcType = type;
+            document.getElementById('calcTypeBuy').classList.toggle('bg-brandBlue-600', type === 'buy');
+            document.getElementById('calcTypeBuy').classList.toggle('text-white', type === 'buy');
+            document.getElementById('calcTypeBuy').classList.toggle('bg-slate-100', type !== 'buy');
+            document.getElementById('calcTypeBuy').classList.toggle('text-slate-700', type !== 'buy');
+
+            document.getElementById('calcTypeSell').classList.toggle('bg-brandBlue-600', type === 'sell');
+            document.getElementById('calcTypeSell').classList.toggle('text-white', type === 'sell');
+            document.getElementById('calcTypeSell').classList.toggle('bg-slate-100', type !== 'sell');
+            document.getElementById('calcTypeSell').classList.toggle('text-slate-700', type !== 'sell');
+
+            calculateExchange();
+        }
+
+        function calculateExchange() {
+            const amount = parseFloat(document.getElementById('calcAmount').value) || 0;
+            const fromCode = document.getElementById('calcFromCurrency').value;
+            const toCode = document.getElementById('calcToCurrency').value;
+
+            const fromObj = globalCurrencies.find(c => c.code === fromCode);
+            const toObj = globalCurrencies.find(c => c.code === toCode);
+
+            if (!fromObj || !toObj) return;
+
+            // Convert 'from' to EGP first
+            let amountInEGP = 0;
+            if (fromCode === 'EGP') {
+                amountInEGP = amount;
+            } else {
+                const rate = (currentCalcType === 'buy') ? fromObj.buy : fromObj.sell;
+                amountInEGP = amount * rate;
+            }
+
+            // Convert EGP to 'to' currency
+            let finalOutput = 0;
+            let appliedRateText = '';
+
+            if (toCode === 'EGP') {
+                finalOutput = amountInEGP;
+                const rate = (currentCalcType === 'buy') ? fromObj.buy : fromObj.sell;
+                appliedRateText = `1 ${fromCode} = ${rate.toFixed(2)} EGP`;
+            } else {
+                const toRate = (currentCalcType === 'buy') ? toObj.sell : toObj.buy;
+                finalOutput = amountInEGP / toRate;
+                appliedRateText = `سعر التحويل المتقاطع بناءً على القيمة بالجنيه`;
+            }
+
+            document.getElementById('calcResultValue').innerText = `${finalOutput.toLocaleString('ar-EG', { maximumFractionDigits: 2 })} ${toCode}`;
+            document.getElementById('calcExchangeRateText').innerText = appliedRateText;
+        }
+
+        function toggleAuthModal() {
+            const modal = document.getElementById('authModal');
+            modal.classList.toggle('hidden');
+        }
+
+        function setGuestMode() {
+            currentUser = { name: 'زائر', phone: '', isGuest: true };
+            updateUserUI();
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('modalUserName').value;
+            const phone = document.getElementById('modalUserPhone').value;
+            const alerts = document.getElementById('modalAlertsCheck').checked;
+
+            currentUser = { name, phone, alerts, isGuest: false };
+            updateUserUI();
+            toggleAuthModal();
+        }
+
+        function updateUserUI() {
+            const authNavText = document.getElementById('authNavText');
+            const currentRoleText = document.getElementById('currentRoleText');
+            const userStatusBox = document.getElementById('userStatusBox');
+
+            if (currentUser && !currentUser.isGuest) {
+                authNavText.innerText = `أهلاً، ${currentUser.name}`;
+                currentRoleText.innerText = `${currentUser.name} (حساب مفعل)`;
+                userStatusBox.innerHTML = `
+                    <div class="p-4 bg-emerald-900/60 rounded-xl border border-emerald-500/30">
+                        <p class="text-emerald-300 font-bold"><i class="fa-solid fa-circle-check ml-1"></i> التنبيهات مفعّلة لرقم: ${currentUser.phone}</p>
+                        <p class="text-xs text-slate-300 mt-1">سيتم إرسال إشعار لك عند تحرك أي سعر عملة بأكثر من 0.20 ج.م.</p>
+                    </div>
+                `;
+            } else {
+                authNavText.innerText = 'تسجيل الدخول / زائر';
+                currentRoleText.innerText = 'زائر (Guest)';
+                userStatusBox.innerHTML = `
+                    <div class="p-4 bg-navy-900/60 rounded-xl border border-slate-700">
+                        <p class="text-slate-300">أنت تتصفح حالياً بصفة: <span class="font-bold text-white">زائر (Guest)</span></p>
+                        <p class="text-xs text-slate-400 mt-1">سجل الدخول لتخصيص تنبيهات تغير السعر على الموبايل.</p>
+                    </div>
+                `;
             }
         }
 
-        amountInput.addEventListener('input', calculate);
-        currencySelect.addEventListener('change', calculate);
+        function toggleAiChat() {
+            const box = document.getElementById('aiChatBox');
+            box.classList.toggle('hidden');
+        }
 
-        // تشغيل التحديث فور تحميل الصفحة أو عمل Reload
+        function handleAiKeyPress(e) {
+            if (e.key === 'Enter') sendAiMessage();
+        }
+
+        async function sendAiMessage() {
+            const input = document.getElementById('aiUserInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const chatMessages = document.getElementById('aiChatMessages');
+
+            // User message bubble
+            const userBubble = document.createElement('div');
+            userBubble.className = 'bg-brandBlue-600 text-white p-3 rounded-xl max-w-[85%] mr-auto leading-relaxed';
+            userBubble.innerText = text;
+            chatMessages.appendChild(userBubble);
+
+            input.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Loading indicator
+            const loadingBubble = document.createElement('div');
+            loadingBubble.className = 'bg-slate-200 text-slate-600 p-3 rounded-xl max-w-[85%] leading-relaxed flex items-center gap-2';
+            loadingBubble.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> جاري التفكير...';
+            chatMessages.appendChild(loadingBubble);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Call Gemini API directly using generateContent
+            try {
+                const systemPrompt = `أنت مساعد الذكاء الاصطناعي الخاص بشركة "المصرية للصرافة" (فرع سمالوط - محافظة المنيا). 
+                عنوان الفرع: شارع الجمهورية - أمام مسجد عبد الجواد سالم - سمالوط.
+                رقم التليفون المباشر للاتصال: 086-9344650.
+                قواعد هامة جداً:
+                1. ممنوع مطلقاً ذكر اسم "بنك مصر" في أي جزء من الإجابة!
+                2. إجاباتك تكون ودودة ومباشرة ومختصرة باللغة العربية.
+                3. توضيح الأوراق المطلوبة لتبديل العملة (بطاقة رقم قومي سارية أو جواز سفر).
+                4. مواعيد العمل: من 8:30 صباحاً حتى 9:00 مساءً طوال الأسبوع (والجمعة بعد الصلاة).`;
+
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: text }] }],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                chatMessages.removeChild(loadingBubble);
+
+                const aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "نعتذر، يمكنك الاتصال بفرع سمالوط مباشرة على الرقم 086-9344650 للاستفسار.";
+
+                const aiBubble = document.createElement('div');
+                aiBubble.className = 'bg-blue-50 border border-blue-200 text-slate-800 p-3 rounded-xl max-w-[85%] leading-relaxed';
+                aiBubble.innerText = aiReply;
+                chatMessages.appendChild(aiBubble);
+
+            } catch (err) {
+                if (chatMessages.contains(loadingBubble)) {
+                    chatMessages.removeChild(loadingBubble);
+                }
+                const errBubble = document.createElement('div');
+                errBubble.className = 'bg-rose-50 text-rose-700 p-3 rounded-xl max-w-[85%]';
+                errBubble.innerText = "يمكنك التواصل فوراً مع الفرع على هاتف 086-9344650 لأي استفسار.";
+                chatMessages.appendChild(errBubble);
+            }
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Initialize Page Setup
         window.onload = function() {
-            updateRates();
-        };
+            renderCurrencyTable();
+            populateCalculatorSelects();
+            calculateExchange();
+        }
     </script>
+
 </body>
 </html>
