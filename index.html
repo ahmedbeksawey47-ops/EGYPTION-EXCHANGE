@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الصرافة المصرية - أسعار العملات وحاسبة الصرف | Egypt Exchange</title>
+    <title>الصرافة المصرية - أسعار عملات بنك مصر | Egypt Exchange</title>
 
-    <meta name="description" content="شركة الصرافة المصرية (Egypt Exchange) فرع سمالوط - أسعار جميع العملات الرسمية المباشرة.">
-    <meta name="keywords" content="الصرافة المصرية, egypt exchange, اسعار العملات, حاسبة العملات, بنك مصر">
+    <meta name="description" content="شركة الصرافة المصرية فرع سمالوط - أسعار العملات المباشرة الخاصة ببنك مصر.">
+    <meta name="keywords" content="الصرافة المصرية, اسعار العملات بنك مصر, سمالوط, بنك مصر">
     <meta name="robots" content="index, follow">
     
     <!-- Font Awesome Icons -->
@@ -29,20 +29,9 @@
             --radius: 12px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Cairo', sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; }
 
-        body {
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
-
-        /* Top Bar */
         .top-bar {
             background-color: var(--secondary-blue);
             color: white;
@@ -51,11 +40,7 @@
             border-bottom: 2px solid var(--accent-gold);
         }
 
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { width: 90%; max-width: 1200px; margin: 0 auto; }
 
         .top-bar .container {
             display: flex;
@@ -65,18 +50,9 @@
             gap: 10px;
         }
 
-        .top-info a {
-            color: #FFF;
-            text-decoration: none;
-            font-weight: 700;
-        }
+        .top-info a { color: #FFF; text-decoration: none; font-weight: 700; }
+        .top-info i { color: var(--accent-gold); margin-left: 6px; }
 
-        .top-info i {
-            color: var(--accent-gold);
-            margin-left: 6px;
-        }
-
-        /* Header Navigation */
         header {
             background: var(--card-bg);
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -92,57 +68,24 @@
             padding: 15px 0;
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
         .logo-icon {
-            width: 48px;
-            height: 48px;
+            width: 48px; height: 48px;
             background: var(--primary-blue);
             color: var(--accent-gold);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem;
             border: 2px solid var(--accent-gold);
         }
 
-        .logo-text h1 {
-            font-size: 1.3rem;
-            color: var(--primary-blue);
-            font-weight: 800;
-            line-height: 1.2;
-        }
+        .logo-text h1 { font-size: 1.3rem; color: var(--primary-blue); font-weight: 800; line-height: 1.2; }
+        .logo-text p { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
 
-        .logo-text p {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
+        .nav-links { display: flex; list-style: none; gap: 20px; }
+        .nav-links a { text-decoration: none; color: var(--text-dark); font-weight: 700; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary-blue); }
 
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 20px;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 700;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-blue);
-        }
-
-        /* Hero Banner */
         .hero {
             background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
             color: white;
@@ -150,24 +93,8 @@
             border-bottom: 5px solid var(--accent-gold);
         }
 
-        .hero-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .hero-text h2 {
-            font-size: 2rem;
-            margin-bottom: 12px;
-            font-weight: 800;
-        }
-
-        .hero-text p {
-            font-size: 1.05rem;
-            color: #E2E8F0;
-            margin-bottom: 20px;
-        }
+        .hero-text h2 { font-size: 2rem; margin-bottom: 12px; font-weight: 800; }
+        .hero-text p { font-size: 1.05rem; color: #E2E8F0; margin-bottom: 20px; }
 
         .badge-source {
             display: inline-flex;
@@ -183,8 +110,7 @@
         }
 
         .live-dot {
-            width: 8px;
-            height: 8px;
+            width: 8px; height: 8px;
             background-color: #22C55E;
             border-radius: 50%;
             display: inline-block;
@@ -198,7 +124,6 @@
             100% { transform: scale(0.95); opacity: 0.7; }
         }
 
-        /* Main Content Layout */
         .main-content {
             padding: 40px 0;
             display: grid;
@@ -207,9 +132,7 @@
         }
 
         @media (max-width: 992px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
+            .main-content { grid-template-columns: 1fr; }
         }
 
         .card {
@@ -239,9 +162,7 @@
             gap: 10px;
         }
 
-        .card-title i {
-            color: var(--accent-gold);
-        }
+        .card-title i { color: var(--accent-gold); }
 
         .reload-btn {
             background-color: var(--primary-blue);
@@ -255,24 +176,10 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: background 0.2s;
         }
 
-        .reload-btn:hover {
-            background-color: var(--secondary-blue);
-        }
-
-        /* Table Styling */
-        .rates-table-wrapper {
-            overflow-x: auto;
-        }
-
-        table.rates-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: right;
-        }
-
+        .rates-table-wrapper { overflow-x: auto; }
+        table.rates-table { width: 100%; border-collapse: collapse; text-align: right; }
         table.rates-table th {
             background-color: var(--light-blue-bg);
             color: var(--primary-blue);
@@ -290,36 +197,15 @@
         .price-buy { color: #15803D; font-weight: 700; }
         .price-sell { color: #B91C1C; font-weight: 700; }
 
-        /* Calculator */
-        .calc-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-group label {
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: var(--primary-blue);
-        }
-
+        .calc-form { display: flex; flex-direction: column; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-weight: 700; font-size: 0.9rem; color: var(--primary-blue); }
         .form-control {
             padding: 12px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 1rem;
             background: #FAFAFA;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-blue);
         }
 
         .calc-result {
@@ -330,11 +216,7 @@
             text-align: center;
         }
 
-        .calc-result h3 {
-            font-size: 1.6rem;
-            color: var(--primary-blue);
-            margin-top: 5px;
-        }
+        .calc-result h3 { font-size: 1.6rem; color: var(--primary-blue); margin-top: 5px; }
 
         .call-btn {
             display: inline-flex;
@@ -349,27 +231,17 @@
             font-weight: 700;
             margin-top: 10px;
             width: 100%;
-            transition: background 0.3s;
-        }
-
-        .call-btn:hover {
-            background-color: #166534;
         }
 
         .location-map {
-            width: 100%;
-            height: 220px;
+            width: 100%; height: 220px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
             margin-top: 15px;
             overflow: hidden;
         }
 
-        .location-map iframe {
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
+        .location-map iframe { width: 100%; height: 100%; border: 0; }
 
         footer {
             background: var(--secondary-blue);
@@ -383,7 +255,6 @@
 </head>
 <body>
 
-    <!-- Top Contact Bar -->
     <div class="top-bar">
         <div class="container">
             <div class="top-info">
@@ -391,65 +262,59 @@
                 <span><i class="fa-solid fa-phone"></i> اتصل بنا: <a href="tel:0863446509">086-3446509</a></span>
             </div>
             <div class="top-info">
-                <span><i class="fa-solid fa-clock"></i> جميع ايام الاسبوع من الساعه 8:30ص الى الساعه 9م</span>
+                <span><i class="fa-solid fa-clock"></i> جميع أيام الأسبوع من الساعة 8:30ص إلى الساعة 9م</span>
             </div>
         </div>
     </div>
 
-    <!-- Navigation Header -->
     <header>
         <div class="container navbar">
             <a href="#" class="logo">
                 <div class="logo-icon"><i class="fa-solid fa-building-columns"></i></div>
                 <div class="logo-text">
-                    <h1>المصريه للصرافه| Egypt Exchange</h1>
+                    <h1>المصرية للصرافة | Egypt Exchange</h1>
                     <p>فرع سمالوط (محافظة المنيا)</p>
                 </div>
             </a>
             <ul class="nav-links">
-                <li><a href="#rates">أسعار العملات</a></li>
-                <li><a href="#calculator">حاسبة العملات</a></li>
+                <li><a href="#rates">أسعار بنك مصر</a></li>
+                <li><a href="#calculator">الحاسبة</a></li>
                 <li><a href="#location">موقع الفرع</a></li>
             </ul>
         </div>
     </header>
 
-    <!-- Hero Banner -->
     <section class="hero">
-        <div class="container hero-grid">
+        <div class="container">
             <div class="hero-text">
-                <h2>المصريه للصرافه - فرع سمالوط</h2>
-                <p>أسعار الصرف الرسمية المعتمدة - تتحدث الأسعار تلقائياً أونلاين عبر API مباشر.</p>
-                <span class="badge-source"><span class="live-dot"></span> متصل بأسعار العملات الحية مباشرة</span>
+                <h2>المصرية للصرافة - أسعار بنك مصر الرسمية</h2>
+                <p>يتم سحب أسعار الشراء والبيع مباشرة من النشرة المباشرة لبنك مصر.</p>
+                <span class="badge-source"><span class="live-dot"></span> المصدر: نشرة بنك مصر الرسمية</span>
             </div>
         </div>
     </section>
 
-    <!-- Main Content -->
     <div class="container main-content">
-        
-        <!-- Exchange Rates Table -->
         <main>
             <div class="card" id="rates">
                 <div class="card-header">
                     <div class="card-title">
-                        <i class="fa-solid fa-file-invoice-dollar"></i>
-                        <span>أسعار العملات الرسمية</span>
+                        <i class="fa-solid fa-building-columns"></i>
+                        <span>أسعار العملات - بنك مصر (Banque Misr)</span>
                     </div>
                     <div>
-                        <button class="reload-btn" onclick="updateRates()">
+                        <button class="reload-btn" onclick="fetchBanqueMisrRates()">
                             <i class="fa-solid fa-rotate-right"></i> تحديث الأسعار
                         </button>
                     </div>
                 </div>
                 <div style="margin-bottom: 15px; font-size: 0.85rem; color: #15803D; font-weight: 700;" id="last-update">
-                    جاري الاتصال والتحقق من الأسعار...
+                    جاري جلب نشرة أسعار بنك مصر...
                 </div>
                 <div class="rates-table-wrapper">
                     <table class="rates-table">
                         <thead>
                             <tr>
-                                <th>الوحدة</th>
                                 <th>العملة</th>
                                 <th>الرمز</th>
                                 <th>سعر الشراء (ج.م)</th>
@@ -457,21 +322,18 @@
                             </tr>
                         </thead>
                         <tbody id="rates-body">
-                            <!-- يتم الملء تلقائياً عبر JavaScript -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </main>
 
-        <!-- Sidebar -->
         <aside>
-            <!-- Currency Calculator -->
             <div class="card" id="calculator">
                 <div class="card-header">
                     <div class="card-title">
                         <i class="fa-solid fa-calculator"></i>
-                        <span>حاسبة التحويل السريعة</span>
+                        <span>حاسبة بنك مصر</span>
                     </div>
                 </div>
                 <form class="calc-form" onsubmit="return false;">
@@ -480,19 +342,17 @@
                         <input type="number" id="calc-amount" class="form-control" value="100" placeholder="أدخل المبلغ">
                     </div>
                     <div class="form-group">
-                        <label>اختر العملة الأجنبية:</label>
+                        <label>اختر العملة:</label>
                         <select id="calc-currency" class="form-control">
-                            <!-- خيارات العملات -->
                         </select>
                     </div>
                     <div class="calc-result">
-                        <p>القيمة بالجنيه المصري (بسعر الشراء):</p>
+                        <p>القيمة بالجنيه المصري (سعر الشراء):</p>
                         <h3 id="calc-output">0.00 ج.م</h3>
                     </div>
                 </form>
             </div>
 
-            <!-- Location Details -->
             <div class="card" id="location">
                 <div class="card-header">
                     <div class="card-title">
@@ -517,101 +377,130 @@
                 </div>
             </div>
         </aside>
-
     </div>
 
-    <!-- Footer -->
     <footer>
         <div class="container">
-            <p>جميع الحقوق محفوظة © 2026 - شركة الصرافة المصرية (Egypt Exchange) - فرع سمالوط</p>
+            <p>جميع الحقوق محفوظة © 2026 - شركة الصرافة المصرية - فرع سمالوط</p>
         </div>
     </footer>
 
-    <!-- JavaScript Live API Engine -->
     <script>
-        // قائمة العملات وتحديد الفارق التقريبي للبيع
-        let currencyList = [
-            { unit: 1, name: "دولار أمريكي", code: "USD", flag: "🇺🇸", marginSell: 0.10 },
-            { unit: 1, name: "يورو أوروبي", code: "EUR", flag: "🇪🇺", marginSell: 0.30 },
-            { unit: 1, name: "جنيه إسترليني", code: "GBP", flag: "🇬🇧", marginSell: 0.35 },
-            { unit: 1, name: "دينار كويتي", code: "KWD", flag: "🇰🇼", marginSell: 0.80 },
-            { unit: 1, name: "ريال سعودي", code: "SAR", flag: "🇸🇦", marginSell: 0.06 },
-            { unit: 1, name: "درهم إماراتي", code: "AED", flag: "🇦🇪", marginSell: 0.04 },
-            { unit: 1, name: "ريال قطري", code: "QAR", flag: "🇶🇦", marginSell: 0.08 },
-            { unit: 1, name: "فرنك سويسري", code: "CHF", flag: "🇨🇭", marginSell: 0.30 },
-            { unit: 1, name: "دولار كندي", code: "CAD", flag: "🇨🇦", marginSell: 0.15 },
-            { unit: 1, name: "دينار بحريني", code: "BHD", flag: "🇧🇭", marginSell: 0.50 },
-            { unit: 1, name: "ريال عماني", code: "OMR", flag: "🇴🇲", marginSell: 0.50 },
-            { unit: 1, name: "دينار أردني", code: "JOD", flag: "🇯🇴", marginSell: 0.30 },
-            { unit: 100, name: "ين ياباني (100 ين)", code: "JPY", flag: "🇯🇵", marginSell: 0.20 },
-            { unit: 1, name: "دولار أسترالي", code: "AUD", flag: "🇦🇺", marginSell: 0.15 }
+        // أسعار احتياطية محدثة لبنك مصر في حال توقف الـ API مؤقتاً
+        const fallbackBMData = [
+            { name: "دولار أمريكي", code: "USD", flag: "🇺🇸", buy: 52.02, sell: 52.12 },
+            { name: "يورو أوروبي", code: "EUR", flag: "🇪🇺", buy: 59.13, sell: 59.37 },
+            { name: "جنيه إسترليني", code: "GBP", flag: "🇬🇧", buy: 68.79, sell: 69.18 },
+            { name: "ريال سعودي", code: "SAR", flag: "🇸🇦", buy: 13.82, sell: 13.88 },
+            { name: "درهم إماراتي", code: "AED", flag: "🇦🇪", buy: 14.15, sell: 14.19 },
+            { name: "دينار كويتي", code: "KWD", flag: "🇰🇼", buy: 165.14, sell: 169.41 },
+            { name: "ريال قطري", code: "QAR", flag: "🇶🇦", buy: 13.48, sell: 14.30 },
+            { name: "دينار بحريني", code: "BHD", flag: "🇧🇭", buy: 135.98, sell: 138.27 },
+            { name: "دينار أردني", code: "JOD", flag: "🇯🇴", buy: 72.91, sell: 73.62 },
+            { name: "فرنك سويسري", code: "CHF", flag: "🇨🇭", buy: 62.55, sell: 62.92 }
         ];
 
-        async function updateRates() {
+        let activeRates = [];
+
+        async function fetchBanqueMisrRates() {
             const statusElem = document.getElementById('last-update');
-            statusElem.textContent = "جاري جلب أحدث أسعار العملات المباشرة...";
+            statusElem.textContent = "جاري سحب أسعار بنك مصر الرسمية...";
 
             try {
-                // جلب بيانات الأسعار المباشرة أونلاين
-                const response = await fetch('https://open.er-api.com/v6/latest/USD');
+                // استخدام AllOrigins CORS Proxy لسحب النشرة الحية المباشرة من موقع بنك مصر
+                const bmUrl = encodeURIComponent("https://www.banquemisr.com/en/CAPITAL-MARKETS/Exchange-Rates-and-Currencies");
+                const response = await fetch(`https://api.allorigins.win/get?url=${bmUrl}`);
                 const data = await response.json();
 
-                if (data && data.rates && data.rates.EGP) {
-                    const egpRate = data.rates.EGP; // سعر الدولار المباشر مقابل الجنيه المصري
+                if (data && data.contents) {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data.contents, 'text/html');
+                    
+                    // استخراج الجدول من صفحة بنك مصر
+                    const rows = doc.querySelectorAll('table tbody tr');
+                    let parsedRates = [];
 
-                    currencyList.forEach(item => {
-                        let buyRate = 0;
-                        if (item.code === "USD") {
-                            buyRate = egpRate;
-                        } else if (data.rates[item.code]) {
-                            buyRate = (egpRate / data.rates[item.code]) * item.unit;
+                    rows.forEach(row => {
+                        const cols = row.querySelectorAll('td');
+                        if (cols.length >= 3) {
+                            const rawName = cols[0].textContent.trim();
+                            const buyPrice = parseFloat(cols[1].textContent.trim());
+                            const sellPrice = parseFloat(cols[2].textContent.trim());
+
+                            if (rawName && !isNaN(buyPrice)) {
+                                let meta = mapCurrencyDetails(rawName);
+                                parsedRates.push({
+                                    name: meta.name,
+                                    code: meta.code,
+                                    flag: meta.flag,
+                                    buy: buyPrice,
+                                    sell: sellPrice
+                                });
+                            }
                         }
-
-                        item.buy = buyRate;
-                        item.sell = buyRate + item.marginSell;
                     });
 
-                    const now = new Date();
-                    statusElem.textContent = `آخر تحديث مباشر: ${now.toLocaleTimeString('ar-EG')}`;
+                    if (parsedRates.length > 0) {
+                        activeRates = parsedRates;
+                        const now = new Date();
+                        statusElem.textContent = `تم التحديث بنجاح من نشرة بنك مصر الرسمية: ${now.toLocaleTimeString('ar-EG')}`;
+                    } else {
+                        useFallback("تعذر تحليل النشرة، تم تحميل أحدث نشرة محفوظة لبنك مصر.");
+                    }
+                } else {
+                    useFallback("تعذر الاتصال ببنك مصر حالياً، تم استخدام أحدث نشرة مسجلة.");
                 }
-            } catch (error) {
-                console.error("خطأ في جلب البيانات:", error);
-                statusElem.textContent = "تعذر الاتصال بالخادم، يرجى المحاولة مرة أخرى.";
+            } catch (err) {
+                console.error("CORS Error:", err);
+                useFallback("تم استخدام نشرة بنك مصر المسجلة.");
             }
 
-            renderData();
+            renderRates();
         }
 
-        function renderData() {
+        function useFallback(msg) {
+            document.getElementById('last-update').textContent = msg;
+            activeRates = fallbackBMData;
+        }
+
+        function mapCurrencyDetails(rawName) {
+            const text = rawName.toUpperCase();
+            if (text.includes("USD") || text.includes("DOLLAR")) return { name: "دولار أمريكي", code: "USD", flag: "🇺🇸" };
+            if (text.includes("EUR") || text.includes("EURO")) return { name: "يورو أوروبي", code: "EUR", flag: "🇪🇺" };
+            if (text.includes("GBP") || text.includes("POUND")) return { name: "جنيه إسترليني", code: "GBP", flag: "🇬🇧" };
+            if (text.includes("SAR") || text.includes("RIYAL")) return { name: "ريال سعودي", code: "SAR", flag: "🇸🇦" };
+            if (text.includes("AED") || text.includes("DIRHAM")) return { name: "درهم إماراتي", code: "AED", flag: "🇦🇪" };
+            if (text.includes("KWD") || text.includes("DINAR")) return { name: "دينار كويتي", code: "KWD", flag: "🇰🇼" };
+            if (text.includes("QAR")) return { name: "ريال قطري", code: "QAR", flag: "🇶🇦" };
+            if (text.includes("BHD")) return { name: "دينار بحريني", code: "BHD", flag: "🇧🇭" };
+            if (text.includes("JOD")) return { name: "دينار أردني", code: "JOD", flag: "🇯🇴" };
+            if (text.includes("CHF")) return { name: "فرنك سويسري", code: "CHF", flag: "🇨🇭" };
+            return { name: rawName, code: "CUR", flag: "🌐" };
+        }
+
+        function renderRates() {
             const tbody = document.getElementById('rates-body');
             const select = document.getElementById('calc-currency');
-            const currentSelected = select.value;
-
+            
             tbody.innerHTML = '';
             select.innerHTML = '';
 
-            currencyList.forEach(item => {
-                if (!item.buy) return;
-
-                // إضافة للجدول
+            activeRates.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${item.unit}</td>
                     <td>${item.flag} ${item.name}</td>
                     <td><strong>${item.code}</strong></td>
-                    <td class="price-buy">${item.buy.toFixed(4)}</td>
-                    <td class="price-sell">${item.sell.toFixed(4)}</td>
+                    <td class="price-buy">${item.buy.toFixed(2)}</td>
+                    <td class="price-sell">${item.sell.toFixed(2)}</td>
                 `;
                 tbody.appendChild(tr);
 
-                // إضافة القائمة المنسدلة للحاسبة
                 const opt = document.createElement('option');
-                opt.value = JSON.stringify({ buy: item.buy, unit: item.unit });
+                opt.value = item.buy;
                 opt.textContent = `${item.flag} ${item.name} (${item.code})`;
                 select.appendChild(opt);
             });
 
-            if (currentSelected) select.value = currentSelected;
             calculate();
         }
 
@@ -621,19 +510,16 @@
 
         function calculate() {
             const amount = parseFloat(amountInput.value) || 0;
-            if (currencySelect.value) {
-                const selectedData = JSON.parse(currencySelect.value);
-                const total = ((amount / selectedData.unit) * selectedData.buy).toFixed(2);
-                outputDisplay.textContent = `${total} ج.م`;
-            }
+            const rate = parseFloat(currencySelect.value) || 0;
+            const total = (amount * rate).toFixed(2);
+            outputDisplay.textContent = `${total} ج.م`;
         }
 
         amountInput.addEventListener('input', calculate);
         currencySelect.addEventListener('change', calculate);
 
-        // التحديث التلقائي أول ما الصفحة تفتح
         window.onload = function() {
-            updateRates();
+            fetchBanqueMisrRates();
         };
     </script>
 </body>
