@@ -261,6 +261,7 @@
             <div class="top-info">
                 <span><i class="fa-solid fa-location-dot"></i> سمالوط - شارع الجمهورية - أمام مسجد عبد الجواد سالم</span>
                 <span><i class="fa-solid fa-phone"></i> اتصل بنا: <a href="tel:0863446509">086-3446509</a></span>
+                <span><i class="fa-solid fa-phone"></i> اتصل بنا: <a href="tel:0863446509">086-3446519</a></span>
             </div>
             <div class="top-info">
                 <span><i class="fa-solid fa-clock"></i> جميع أيام الأسبوع من الساعة 8:30ص إلى الساعة 9م</span>
@@ -278,7 +279,7 @@
                 </div>
             </a>
             <ul class="nav-links">
-                <li><a href="#rates">أسعار بنك مصر</a></li>
+                <li><a href="#rates">أسعار العملات</a></li>
                 <li><a href="#calculator">الحاسبة</a></li>
                 <li><a href="#location">موقع الفرع</a></li>
             </ul>
@@ -288,8 +289,8 @@
     <section class="hero">
         <div class="container">
             <div class="hero-text">
-                <h2>المصرية للصرافة - أسعار بنك مصر الرسمية والدقيقة</h2>
-                <p>أسعار العملات المباشرة والحقيقية بالقرش المجلوبة من بنك مصر.</p>
+                <h2>المصرية للصرافة -الشركه المصريه للصرافه والاعمال الماليه</h2>
+                <p>أسعار العملات المباشرة والحقيقية بالقرش المجلوبة من المصريه للصرافه.</p>
                 <span class="badge-source"><span class="live-dot"></span> المصدر: نشرة بنك مصر الرسمية</span>
             </div>
         </div>
@@ -301,7 +302,7 @@
                 <div class="card-header">
                     <div class="card-title">
                         <i class="fa-solid fa-building-columns"></i>
-                        <span>أسعار العملات - بنك مصر (Banque Misr)</span>
+                        <span>أسعار العملات -المصريه للصرافه (EGYPTION-EXCHANGE)</span>
                     </div>
                     <div>
                         <button class="reload-btn" onclick="fetchBanqueMisrRates()">
@@ -334,7 +335,7 @@
                 <div class="card-header">
                     <div class="card-title">
                         <i class="fa-solid fa-calculator"></i>
-                        <span>حاسبة بنك مصر</span>
+                        <span>حاسبة العملات</span>
                     </div>
                 </div>
                 <form class="calc-form" onsubmit="return false;">
@@ -368,6 +369,7 @@
                 <a href="tel:0863446509" class="call-btn">
                     <i class="fa-solid fa-phone-volume"></i>
                     <span>اتصل بنا الآن: 086-3446509</span>
+                    <span>اتصل بنا الآن: 086-3446519</span>
                 </a>
 
                 <div class="location-map">
@@ -405,7 +407,7 @@
 
         async function fetchBanqueMisrRates() {
             const statusElem = document.getElementById('last-update');
-            statusElem.textContent = "جاري تحديث البيانات المباشرة لـ بنك مصر...";
+            statusElem.textContent = "جاري تحديث البيانات المباشرة لـ المصريه للصرافه...";
 
             try {
                 const targetUrl = encodeURIComponent("https://www.banquemisr.com/en/CAPITAL-MARKETS/Exchange-Rates-and-Currencies");
@@ -441,7 +443,7 @@
                     if (scraped.length > 0) {
                         activeRates = scraped;
                         const now = new Date();
-                        statusElem.textContent = `تم التحديث المباشر من بنك مصر: ${now.toLocaleTimeString('ar-EG')}`;
+                        statusElem.textContent = `تم التحديث المباشر من المصريه للصرافه: ${now.toLocaleTimeString('ar-EG')}`;
                     } else {
                         loadExact();
                     }
@@ -458,7 +460,7 @@
         function loadExact() {
             activeRates = exactBanqueMisrRates;
             const now = new Date();
-            document.getElementById('last-update').textContent = `أسعار نشرة بنك مصر المعتمدة والمطابقة للمركزي (${now.toLocaleTimeString('ar-EG')})`;
+            document.getElementById('last-update').textContent = `اسعار شركة المصريه للصرافه والاعمال الماليه (${now.toLocaleTimeString('ar-EG')})`;
         }
 
         function mapDetails(raw) {
