@@ -1,1012 +1,991 @@
+<script>
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Building2, Phone, MapPin, Clock, RefreshCw, Calculator, UserCheck, 
-  Ticket, Calendar, ShieldCheck, ArrowRightLeft, Bell, Play, CheckCircle2, 
-  Users, Zap, Timer, MessageSquare, AlertCircle, Sparkles, Navigation,
-  CreditCard, TrendingUp, Layers, ChevronRight, Activity, Volume2, VolumeX, Smartphone
+import {
+  Building2, Phone, MapPin, Clock, ShieldCheck, Calculator,
+  TrendingUp, RefreshCw, Send, CheckCircle2, AlertCircle,
+  MessageSquare, Settings, Play, ArrowRight, UserCheck, Zap,
+  Calendar, FileCode, Users, Monitor, ShieldAlert, Check, Copy, Sparkles, AlertTriangle
 } from 'lucide-react';
 
+const INITIAL_CURRENCIES = [
+  { code: 'USD', name: 'دولار أمريكي', flag: '🇺🇸', buy: 48.50, sell: 48.60, change: '+0.10' },
+  { code: 'EUR', name: 'يورو أوروبي', flag: '🇪🇺', buy: 52.30, sell: 52.50, change: '-0.05' },
+  { code: 'SAR', name: 'ريال سعودي', flag: '🇸🇦', buy: 12.92, sell: 12.96, change: '0.00' },
+  { code: 'AED', name: 'درهم إماراتي', flag: '🇦🇪', buy: 13.20, sell: 13.24, change: '0.00' },
+  { code: 'GBP', name: 'جنيه إسترليني', flag: '🇬🇧', buy: 61.80, sell: 62.15, change: '+0.25' },
+  { code: 'KWD', name: 'دينار كويتي', flag: '🇰🇼', buy: 157.80, sell: 158.50, change: '+0.40' },
+  { code: 'QAR', name: 'ريال قطري', flag: '🇶🇦', buy: 13.30, sell: 13.35, change: '0.00' },
+];
+
 export default function App() {
-  // Navigation active tab: 'home', 'rates', 'queue', 'display', 'admin'
-  const [activeTab, setActiveTab] = useState('home');
-
-  // User Registration & Queue State
-  const [user, setUser] = useState({ name: '', phone: '' });
-  const [isRegistered, setIsRegistered] = useState(false);
-  const [myTicket, setMyTicket] = useState(null); // { id, number, type, currency, amount, status, fastTrack }
-  const [whatsappNotification, setWhatsappNotification] = useState(null);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-
-  // Exchange Rates State
-  const [rates, setRates] = useState([
-    { code: 'USD', name: 'دولار أمريكي', flag: '🇺🇸', buy: 48.65, sell: 48.75, change: '+0.10' },
-    { code: 'EUR', name: 'يورو أوروبي', flag: '🇪🇺', buy: 52.40, sell: 52.65, change: '-0.05' },
-    { code: 'SAR', name: 'ريال سعودي', flag: '🇸🇦', buy: 12.96, sell: 12.99, change: '0.00' },
-    { code: 'AED', name: 'درهم إماراتي', flag: '🇦🇪', buy: 13.24, sell: 13.27, change: '0.00' },
-    { code: 'GBP', name: 'جنيه إسترليني', flag: '🇬🇧', buy: 62.80, sell: 63.15, change: '+0.25' },
-    { code: 'KWD', name: 'دينار كويتي', flag: '🇰🇼', buy: 158.20, sell: 158.90, change: '+0.40' },
-    { code: 'CAD', name: 'دولار كندي', flag: '🇨🇦', buy: 35.10, sell: 35.35, change: '-0.02' },
-    { code: 'QAR', name: 'ريال قطري', flag: '🇶🇦', buy: 13.30, sell: 13.38, change: '0.00' }
-  ]);
+  const [activeTab, setActiveTab] = useState('queue'); // queue, rates, monitor, api-config, code-snippets
+  const [currencies, setCurrencies] = useState(INITIAL_CURRENCIES);
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString('ar-EG'));
-  const [loadingRates, setLoadingRates] = useState(false);
 
   // Calculator State
   const [calcAmount, setCalcAmount] = useState(100);
   const [calcCurrency, setCalcCurrency] = useState('USD');
-  const [calcType, setCalcType] = useState('sell'); // 'sell' = user buys foreign currency, 'buy' = user sells foreign currency
+  const [calcType, setCalcType] = useState('buy'); // 'buy' = نحن نشتري من العميل، 'sell' = العميل يشتري منا
 
-  // Smart Queue Engine State
-  const [currentTicketNumber, setCurrentTicketNumber] = useState(105);
-  const [servingQueue, setServingQueue] = useState([
-    { window: 'شباك 1 (مسار سريع)', number: 'A-101', client: 'أحمد محمود', service: 'صرف سريع (200 $)', time: '01:45' },
-    { window: 'شباك 2 (صرف رئيسي)', number: 'B-042', client: 'سارة سيد', service: 'صرف مسبق (1500 SAR)', time: '03:12' },
-    { window: 'شباك 3 (خدمة عملاء)', number: 'A-102', client: 'مينا سمير', service: 'تحويل عملات', time: '02:05' },
-    { window: 'شباك 4 (حجز مسبق)', number: 'A-103', client: 'حسن علي', service: 'حجز 11:30 ص', time: '00:50' },
+  // WhatsApp API Configuration State
+  const [waConfig, setWaConfig] = useState({
+    provider: 'ultramsg', // ultramsg, twilio, greenapi
+    instanceId: '',
+    token: '',
+    phoneNumber: '', // WhatsApp Sandbox Number if Twilio
+    enabled: false
+  });
+  const [waStatus, setWaStatus] = useState({ type: '', message: '' });
+  const [isTestingWa, setIsTestingWa] = useState(false);
+
+  // Queue Form State
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [serviceType, setServiceType] = useState('standard'); // standard, express, appointment
+  const [selectedCurrency, setSelectedCurrency] = useState('SAR');
+  const [expectedAmount, setExpectedAmount] = useState('1000');
+  const [appointmentTime, setAppointmentTime] = useState('11:00');
+
+  // Active User Ticket State
+  const [myTicket, setMyTicket] = useState(null);
+  const [sendLogs, setSendLogs] = useState([]);
+
+  // Counter Counters & Queue Management Simulation State
+  const [currentServing, setCurrentServing] = useState({
+    counter1: 101,
+    counter2: 102,
+    counter3: 103,
+    counter4: 104,
+  });
+  const [queueList, setQueueList] = useState([
+    { id: 105, name: 'محمود حسن', phone: '201012345678', type: 'إكسبريس (صرف مسبق)', status: 'waiting' },
+    { id: 106, name: 'أحمد علي', phone: '201122334455', type: 'قياسي', status: 'waiting' },
+    { id: 107, name: 'سارة محمد', phone: '201233445566', type: 'موعد مسبق', status: 'waiting' },
   ]);
+  const [kpiAvgTime, setKpiAvgTime] = useState(145); // in seconds
 
-  // KPIs & Statistics
-  const [avgServiceTime, setAvgServiceTime] = useState(2.4); // in minutes
-  const [totalServedToday, setTotalServedToday] = useState(148);
-  const [waitingCount, setWaitingCount] = useState(12);
+  // Code Snippets Tab State
+  const [copiedSnippet, setCopiedSnippet] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('nodejs');
 
-  // Form States for Pre-order & Appointments
-  const [preOrder, setPreOrder] = useState({ currency: 'USD', amount: '500', note: '' });
-  const [appointment, setAppointment] = useState({ date: new Date().toISOString().split('T')[0], time: '10:30' });
+  const handleRefreshRates = () => {
+    const updated = currencies.map(c => {
+      const variation = (Math.random() - 0.5) * 0.1;
+      const newBuy = +(c.buy + variation).toFixed(2);
+      const newSell = +(newBuy + 0.10).toFixed(2);
+      return { ...c, buy: newBuy, sell: newSell, change: variation >= 0 ? `+${variation.toFixed(2)}` : variation.toFixed(2) };
+    });
+    setCurrencies(updated);
+    setLastUpdated(new Date().toLocaleTimeString('ar-EG'));
+  };
 
-  // Fetch real rates or update dynamically
-  const fetchRates = async () => {
-    setLoadingRates(true);
+  const sendActualWhatsAppMessage = async (targetPhone, textMessage) => {
+    if (!waConfig.enabled) {
+      addLog(`⚠️ لم يتم تفعيل إرسال الواتساب من شاشة الإعدادات. تم تنفيذ محاكاة مجانية.`);
+      return { success: true, simulated: true };
+    }
+
+    if (!waConfig.instanceId || !waConfig.token) {
+      addLog(`❌ خطأ: لم يتم إضافة Instance ID أو Token الخاص بـ API!`);
+      return { success: false, error: 'بيانات الـ API غير مكتملة' };
+    }
+
+    addLog(`🔄 جاري إرسال الرسالة إلى ${targetPhone} عبر بوابة ${waConfig.provider}...`);
+
     try {
-      const response = await fetch('https://open.er-api.com/v6/latest/USD');
-      const data = await response.json();
-      if (data && data.rates && data.rates.EGP) {
-        const usdEgp = data.rates.EGP;
-        setRates(prev => prev.map(r => {
-          let baseUsdRate = 1;
-          if (r.code === 'USD') baseUsdRate = 1;
-          else if (r.code === 'EUR') baseUsdRate = 1 / (data.rates.EUR || 0.92);
-          else if (r.code === 'SAR') baseUsdRate = 1 / (data.rates.SAR || 3.75);
-          else if (r.code === 'AED') baseUsdRate = 1 / (data.rates.AED || 3.67);
-          else if (r.code === 'GBP') baseUsdRate = 1 / (data.rates.GBP || 0.79);
-          else if (r.code === 'KWD') baseUsdRate = 1 / (data.rates.KWD || 0.30);
-          else if (r.code === 'CAD') baseUsdRate = 1 / (data.rates.CAD || 1.38);
-          else if (r.code === 'QAR') baseUsdRate = 1 / (data.rates.QAR || 3.64);
-
-          const egpRate = usdEgp * baseUsdRate;
-          const buy = parseFloat((egpRate * 0.997).toFixed(2));
-          const sell = parseFloat((egpRate * 1.002).toFixed(2));
-          return { ...r, buy, sell };
-        }));
-        setLastUpdated(new Date().toLocaleTimeString('ar-EG'));
+      let response;
+      let formattedPhone = targetPhone.replace(/\D/g, '');
+      if (!formattedPhone.startsWith('20') && formattedPhone.length === 11) {
+        formattedPhone = '20' + formattedPhone; // مصر تلقائياً
       }
-    } catch (err) {
-      console.log('Using bank default benchmark rates', err);
-      // Fallback simulating minor fluctuation
-      setRates(prev => prev.map(r => ({
-        ...r,
-        buy: parseFloat((r.buy + (Math.random() * 0.08 - 0.04)).toFixed(2)),
-        sell: parseFloat((r.sell + (Math.random() * 0.08 - 0.04)).toFixed(2))
-      })));
-      setLastUpdated(new Date().toLocaleTimeString('ar-EG'));
-    } finally {
-      setLoadingRates(false);
-    }
-  };
 
-  useEffect(() => {
-    fetchRates();
-    const interval = setInterval(fetchRates, 60000); // 1 minute interval
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const queueInterval = setInterval(() => {
-      // Simulate ticket advancing
-      setServingQueue(prev => {
-        const nextNum = currentTicketNumber + 1;
-        setCurrentTicketNumber(nextNum);
-        
-        // Randomly refresh one serving window
-        const updated = [...prev];
-        const randomWinIdx = Math.floor(Math.random() * updated.length);
-        const prefix = randomWinIdx === 0 ? 'F' : 'A';
-        updated[randomWinIdx] = {
-          ...updated[randomWinIdx],
-          number: `${prefix}-${nextNum}`,
-          time: '00:05'
-        };
-        return updated;
-      });
-
-      setTotalServedToday(prev => prev + 1);
-    }, 15000); // Advance queue every 15s for interactive feel
-
-    return () => clearInterval(queueInterval);
-  }, [currentTicketNumber]);
-
-  // Check ticket distance and trigger alert
-  useEffect(() => {
-    if (myTicket && myTicket.status === 'waiting') {
-      const numericTicket = parseInt(myTicket.number.split('-')[1]);
-      const distance = numericTicket - currentTicketNumber;
-      
-      if (distance <= 5 && distance > 0 && !myTicket.notified) {
-        setMyTicket(prev => ({ ...prev, notified: true }));
-        setWhatsappNotification({
-          phone: user.phone,
-          msg: `مرحباً ${user.name}! يتبقى 5 عملاء فقط على دورك (${myTicket.number}) في شركة الصرافة المصرية فرع سمالوط. يرجى التوجه لداخل الفرع.`
+      if (waConfig.provider === 'ultramsg') {
+        const url = `https://api.ultramsg.com/${waConfig.instanceId}/messages/chat`;
+        const params = new URLSearchParams({
+          token: waConfig.token,
+          to: formattedPhone,
+          body: textMessage,
         });
-        if (soundEnabled && 'speechSynthesis' in window) {
-          const utterance = new SpeechSynthesisUtterance(`تنبيه: اقترب دورك يا ${user.name}. يتبقى 5 عملاء فقط.`);
-          utterance.lang = 'ar-EG';
-          window.speechSynthesis.speak(utterance);
-        }
-      } else if (distance <= 0) {
-        setMyTicket(prev => ({ ...prev, status: 'serving' }));
-      }
-    }
-  }, [currentTicketNumber, myTicket, user, soundEnabled]);
 
-  const handleRegister = (e) => {
-    e.preventDefault();
-    if (user.name && user.phone) {
-      setIsRegistered(true);
+        response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params
+        });
+      } else if (waConfig.provider === 'greenapi') {
+        const url = `https://api.green-api.com/waInstance${waConfig.instanceId}/sendMessage/${waConfig.token}`;
+        response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chatId: `${formattedPhone}@c.us`,
+            message: textMessage
+          })
+        });
+      }
+
+      const resData = await response.json();
+      addLog(`✅ استجابة سيرفر الواتساب: ${JSON.stringify(resData)}`);
+      return { success: true, data: resData };
+    } catch (err) {
+      addLog(`❌ فشل الاتصال ببوابة الواتساب: ${err.message}`);
+      return { success: false, error: err.message };
     }
   };
 
-  const handleTakeTicket = (isFastTrack = false, customData = null) => {
-    if (!isRegistered) {
-      alert('يرجى إدخال اسمك ورقم الهاتف أولاً لإصدار رقم الدور ومتابعة التنبيهات.');
-      setActiveTab('queue');
+  const addLog = (msg) => {
+    setSendLogs(prev => [`[${new Date().toLocaleTimeString('ar-EG')}] ${msg}`, ...prev.slice(0, 19)]);
+  };
+
+  const handleTestWhatsApp = async () => {
+    if (!waConfig.instanceId || !waConfig.token || !waConfig.phoneNumber) {
+      setWaStatus({ type: 'error', message: 'يرجى إدخال جميع معلومات المفاتيح ورقم الهاتف لتجربة الرسالة.' });
+      return;
+    }
+    setIsTestingWa(true);
+    setWaStatus({ type: 'info', message: 'جاري الاتصال بالسيرفر وإرسال الرسالة التجريبية...' });
+
+    const msg = `🏛️ *شركة الصرافة المصرية - فرع سمالوط*\n\nهذه رسالة اختبار لربط نظام التذاكر التلقائي بنجاح! 🚀\nشكراً لتواصلك معنا.`;
+    const res = await sendActualWhatsAppMessage(waConfig.phoneNumber, msg);
+
+    setIsTestingWa(false);
+    if (res.success) {
+      setWaStatus({ type: 'success', message: 'تم إرسال الرسالة التجريبية بنجاح إلى هاتفك! تحقق من تطبيق WhatsApp.' });
+    } else {
+      setWaStatus({ type: 'error', message: `فشل الإرسال: ${res.error}` });
+    }
+  };
+
+  const handleIssueTicket = async (e) => {
+    e.preventDefault();
+    if (!customerName || !customerPhone) {
+      alert('يرجى ملء الاسم ورقم الهاتف على الأقل');
       return;
     }
 
-    const nextNum = currentTicketNumber + Math.floor(Math.random() * 8) + 6;
-    const prefix = isFastTrack ? 'F' : 'A';
+    const nextTicketNum = Math.max(107, ...queueList.map(q => q.id), ...Object.values(currentServing)) + 1;
     const newTicket = {
-      id: Date.now(),
-      number: `${prefix}-${nextNum}`,
-      numOnly: nextNum,
-      type: customData?.type || (isFastTrack ? 'مسار سريع (مبالغ مجهزة)' : 'خدمة عادية'),
-      currency: customData?.currency || null,
-      amount: customData?.amount || null,
-      appointmentTime: customData?.time || null,
-      status: 'waiting',
-      fastTrack: isFastTrack,
-      createdAt: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
-      notified: false
+      id: nextTicketNum,
+      name: customerName,
+      phone: customerPhone,
+      serviceType,
+      currency: selectedCurrency,
+      amount: expectedAmount,
+      time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+      estimatedWait: (queueList.length + 1) * 3, // دقائق
+      aheadCount: queueList.length,
     };
 
     setMyTicket(newTicket);
-    setWaitingCount(prev => prev + 1);
+    setQueueList(prev => [...prev, {
+      id: newTicket.id,
+      name: newTicket.name,
+      phone: newTicket.phone,
+      type: serviceType === 'express' ? 'إكسبريس' : serviceType === 'appointment' ? 'موعد' : 'عادي',
+      status: 'waiting'
+    }]);
 
-    // Simulate sending initial confirmation WhatsApp SMS
-    setWhatsappNotification({
-      phone: user.phone,
-      msg: `تم إصدار رقم الدور الخاص بك (${newTicket.number}) بنجاح. سنقوم بتنبيهك عبر الواتساب عندما يتبقى 5 عملاء فقط على دورك!`
-    });
+    // الإشعار عبر الواتساب
+    const waText = `🏛️ *شركة الصرافة المصرية - فرع سمالوط*\n\nمرحباً بك أ/ *${customerName}*،\nتم إصدار تذكرتك بنجاح!\n\n🎟️ *رقم التذكرة:* #${newTicket.id}\n⏱️ *عدد المنتظرين قبلك:* ${newTicket.aheadCount}\n🕒 *وقت الانتظار المتوقع:* ${newTicket.estimatedWait} دقائق\n📍 *الفرع:* سمالوط - شارع البوستة\n\nسنقوم بإرسال إشعار عند اقتراب دورك (أقل من 5 أرقام).`;
+
+    sendActualWhatsAppMessage(customerPhone, waText);
   };
 
-  const selectedRateObj = rates.find(r => r.code === calcCurrency) || rates[0];
-  const calculatedResult = calcType === 'sell' 
-    ? (calcAmount * selectedRateObj.sell).toFixed(2)
-    : (calcAmount * selectedRateObj.buy).toFixed(2);
+  const handleNextCustomer = (counterName) => {
+    if (queueList.length === 0) return;
+    const nextInLine = queueList[0];
+
+    setCurrentServing(prev => ({
+      ...prev,
+      [counterName]: nextInLine.id
+    }));
+
+    setQueueList(prev => prev.slice(1));
+
+    // إذا يتبقى 2 أو أقل، أرسل تنبيه للعملاء المنتظرين
+    if (queueList.length > 1) {
+      const upcoming = queueList[1];
+      if (upcoming.phone) {
+        sendActualWhatsAppMessage(upcoming.phone, `🔔 *تنبيه اقتراب الدور - صرافة سمالوط*\n\nأستاذ/ *${upcoming.name}*، يتبقى رقمين فقط على دورك (#${upcoming.id}). يرجى التواجد في صالة الفرع.`);
+      }
+    }
+  };
+
+  // Select calculation value
+  const selectedCurrObj = currencies.find(c => c.code === calcCurrency) || currencies[0];
+  const calculatedTotal = calcType === 'buy'
+    ? (calcAmount * selectedCurrObj.buy).toFixed(2)
+    : (calcAmount * selectedCurrObj.sell).toFixed(2);
+
+  const nodejsCode = `// nodejs_whatsapp_bot.js
+// ربط إرسال رسائل التذاكر تلقائياً عبر Node.js + Express + UltraMsg/Twilio
+const express = require('express');
+const axios = require('axios');
+const app = express();
+app.use(express.json());
+
+const INSTANCE_ID = "instanceXXXXXX"; // ضع Instance ID الخاص بك
+const ULTRAMSG_TOKEN = "your_ultramsg_token"; // ضع Token الخاص بك
+
+// رابط استقبال طلب إصدار التذكرة
+app.post('/api/issue-ticket', async (req, res) => {
+  const { name, phone, ticketNumber, aheadCount } = req.body;
+
+  // تنظيف وتنسيق رقم الهاتف المصري
+  let formattedPhone = phone.replace(/\\D/g, '');
+  if (!formattedPhone.startsWith('20')) formattedPhone = '20' + formattedPhone;
+
+  const message = \`🏛️ *شركة الصرافة المصرية - فرع سمالوط*\\n\\nمرحباً بك أ/ *\${name}*\\nتم إصدار تذكرتك بنجاح!\\n\\n🎟️️ *رقم التذكرة:* #\${ticketNumber}\\n👥 *العملاء قبلك:* \${aheadCount}\\n📍 *الفرع:* سمالوط - ش البوستة\\n\\nسننبهك عبر الواتساب فور اقتراب دورك!\`;
+
+  try {
+    const response = await axios.post(\`https://api.ultramsg.com/\${INSTANCE_ID}/messages/chat\`, {
+      token: ULTRAMSG_TOKEN,
+      to: formattedPhone,
+      body: message
+    });
+
+    res.json({ success: true, waResponse: response.data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.listen(3000, () => console.log('Server running on port 3000'));`;
+
+  const pythonCode = `# python_whatsapp_bot.py
+# ربط إرسال رسائل التذاكر تلقائياً عبر Python + Flask + UltraMsg
+from flask import Flask, request, jsonify
+import requests
+
+app = Flask(__name__)
+
+INSTANCE_ID = "instanceXXXXXX"
+ULTRAMSG_TOKEN = "your_ultramsg_token"
+
+@app.route('/api/issue-ticket', methods=['POST'])
+def issue_ticket():
+    data = request.json
+    name = data.get('name')
+    phone = data.get('phone')
+    ticket_num = data.get('ticketNumber')
+    
+    # تنسيق رقم الهاتف
+    clean_phone = ''.join(filter(str.isdigit, phone))
+    if not clean_phone.startswith('20'):
+        clean_phone = '20' + clean_phone
+
+    msg_body = f"🏛️ *شركة الصرافة المصرية - فرع سمالوط*\\n\\nمرحباً بك أ/ *{name}*\\nتم إصدار التذكرة رقم: #{ticket_num}\\n\\nشكراً لاستخدامكم خدمة التذاكر الذكية!"
+
+    url = f"https://api.ultramsg.com/{INSTANCE_ID}/messages/chat"
+    payload = {
+        "token": ULTRAMSG_TOKEN,
+        "to": clean_phone,
+        "body": msg_body
+    }
+
+    response = requests.post(url, data=payload)
+    return jsonify(response.json())
+
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)`;
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans dir-rtl" dir="rtl">
+</script>
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans dir-rtl" dir="rtl">
       
-      {}
-      {whatsappNotification && (
-        <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 z-50 max-w-sm bg-emerald-700 text-white p-4 rounded-2xl shadow-2xl border border-emerald-500/30 flex flex-col gap-2 animate-bounce">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-emerald-300" />
-              <span className="font-bold text-sm">إشعار الواتساب التفاعلي</span>
-            </div>
-            <button 
-              onClick={() => setWhatsappNotification(null)}
-              className="text-xs bg-emerald-800 hover:bg-emerald-900 px-2 py-1 rounded-full text-emerald-200"
-            >
-              إغلاق
-            </button>
-          </div>
-          <p className="text-xs text-emerald-100 leading-relaxed">{whatsappNotification.msg}</p>
-          <span className="text-[10px] text-emerald-300 self-end">إلى: {whatsappNotification.phone}</span>
-        </div>
-      )}
-
-      {}
-      <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-amber-500/20">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+      {/* 1. Header Bar */}
+      <header className="bg-gradient-to-r from-slate-900 via-amber-950/40 to-slate-900 border-b border-amber-500/30 sticky top-0 z-50 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
           
-          {/* Logo */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('home')}>
-            <div className="w-11 h-11 bg-gradient-to-tr from-amber-500 to-yellow-300 rounded-xl flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-500/20 border border-yellow-200">
-              <Building2 className="w-6 h-6" />
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-300 p-0.5 shadow-lg shadow-amber-500/20">
+              <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+                <Building2 className="w-6 h-6 text-amber-400" />
+              </div>
             </div>
             <div>
-              <h1 className="text-lg font-bold text-amber-400 leading-tight">شركة الصرافة المصرية</h1>
-              <p className="text-xs text-slate-400 flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-amber-500" /> فرع سمالوط الممتاز
+              <h1 className="text-xl font-bold text-amber-100 flex items-center gap-2">
+                شركة الصرافة المصرية
+                <span className="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-normal">
+                  فرع سمالوط
+                </span>
+              </h1>
+              <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+                <MapPin className="w-3 h-3 text-amber-400" /> محافظة المنيا - سمالوط - شارع البوستة بجوار البنك الأهلي
               </p>
             </div>
           </div>
 
-          {/* Quick Direct Call Buttons */}
-          <div className="hidden sm:flex items-center gap-2">
-            <a 
-              href="tel:0863446509" 
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-lg hover:bg-amber-500/20 transition-all"
-            >
-              <Phone className="w-3.5 h-3.5 text-amber-400" />
-              <span>086-3446509</span>
+          <div className="flex flex-wrap items-center gap-3 text-xs">
+            <a href="tel:0863446509" className="flex items-center gap-1.5 bg-slate-900/80 hover:bg-amber-500/10 text-amber-300 border border-amber-500/30 px-3 py-2 rounded-lg transition">
+              <Phone className="w-3.5 h-3.5 text-amber-400" /> 086-3446509
             </a>
-            <a 
-              href="tel:0863446519" 
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/30 rounded-lg hover:bg-amber-500/20 transition-all"
+            <a href="tel:0863446519" className="flex items-center gap-1.5 bg-slate-900/80 hover:bg-amber-500/10 text-amber-300 border border-amber-500/30 px-3 py-2 rounded-lg transition">
+              <Phone className="w-3.5 h-3.5 text-amber-400" /> 086-3446519
+            </a>
+            <a
+              href="https://maps.google.com/?q=Samalut+Minya+Egypt"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3 py-2 rounded-lg transition shadow-md shadow-amber-500/10"
             >
-              <Phone className="w-3.5 h-3.5 text-amber-400" />
-              <span>086-3446519</span>
+              <MapPin className="w-3.5 h-3.5" /> الخريطة المباشرة
             </a>
           </div>
 
-          {/* Sound Toggle */}
-          <button 
-            onClick={() => setSoundEnabled(!soundEnabled)}
-            className="p-2 bg-slate-800 text-slate-300 hover:text-amber-400 rounded-lg border border-slate-700 text-xs flex items-center gap-1.5"
-            title="التنبيه الصوتي"
-          >
-            {soundEnabled ? <Volume2 className="w-4 h-4 text-amber-400" /> : <VolumeX className="w-4 h-4 text-slate-500" />}
-            <span className="hidden md:inline">{soundEnabled ? 'الصوت مفعل' : 'مكتوم'}</span>
-          </button>
         </div>
 
-        {/* Navigation Tabs */}
-        <nav className="bg-slate-900 border-t border-slate-800">
-          <div className="max-w-7xl mx-auto px-4 flex overflow-x-auto no-scrollbar gap-1 py-1 text-sm">
-            {[
-              { id: 'home', label: 'الرئيسية والفرع', icon: Building2 },
-              { id: 'rates', label: 'أسعار العملات والآلة الحاسبة', icon: Calculator },
-              { id: 'queue', label: 'حجز دور وصرف مسبق', icon: Ticket },
-              { id: 'display', label: 'شاشة الانتظار المباشرة', icon: Play },
-              { id: 'admin', label: 'إدارة وتوجيه الفرع (KPI)', icon: Activity }
-            ].map(tab => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium whitespace-nowrap transition-all ${
-                    isActive 
-                      ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20' 
-                      : 'text-slate-300 hover:bg-slate-800 hover:text-amber-300'
-                  }`}
-                >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-slate-950' : 'text-amber-400'}`} />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </nav>
+        {/* Working Hours Sub-bar */}
+        <div className="bg-slate-900/90 border-t border-slate-800 text-xs py-1.5 px-4 text-slate-400 flex flex-wrap justify-between items-center max-w-7xl mx-auto">
+          <span className="flex items-center gap-2">
+            <Clock className="w-3.5 h-3.5 text-emerald-400" />
+            <strong className="text-slate-200">مواعيد العمل:</strong> يوماً من 8:00 صباحاً حتى 9:00 مساءً | <span className="text-amber-400">الجمعة: بعد صلاة الجمعة حتى 9:00 مساءً</span>
+          </span>
+          <span className="text-emerald-400 font-medium flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            الفرع مفتوح الآن لاستقبال العملاء
+          </span>
+        </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      {/* 2. Main Navigation Tabs */}
+      <nav className="bg-slate-900 border-b border-slate-800 sticky top-[73px] z-40">
+        <div className="max-w-7xl mx-auto px-4 flex gap-2 overflow-x-auto py-2">
+          <button
+            onClick={() => setActiveTab('queue')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap ${
+              activeTab === 'queue' ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' : 'text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <Zap className="w-4 h-4" /> قطع تذكرة دور (Smart Queue)
+          </button>
 
-        {}
-        {activeTab === 'home' && (
-          <div className="space-y-6">
+          <button
+            onClick={() => setActiveTab('rates')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap ${
+              activeTab === 'rates' ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' : 'text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <TrendingUp className="w-4 h-4" /> أسعار العملات والآلة الحاسبة
+          </button>
+
+          <button
+            onClick={() => setActiveTab('monitor')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap ${
+              activeTab === 'monitor' ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' : 'text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <Monitor className="w-4 h-4" /> شاشة الشبابيك الحية (Monitor)
+          </button>
+
+          <button
+            onClick={() => setActiveTab('api-config')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap ${
+              activeTab === 'api-config' ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' : 'text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <Settings className="w-4 h-4" /> إعدادات WhatsApp API الحقيقية
+          </button>
+
+          <button
+            onClick={() => setActiveTab('code-snippets')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition whitespace-nowrap ${
+              activeTab === 'code-snippets' ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' : 'text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <FileCode className="w-4 h-4" /> أكواد الربط البرمجي (Backend)
+          </button>
+        </div>
+      </nav>
+
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+
+        {/* TAB 1: SMART QUEUE TICKETING SYSTEM */}
+        {activeTab === 'queue' && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            {/* Hero Banner */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-blue-950 p-6 md:p-10 border border-amber-500/30 shadow-2xl">
-              <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-              
-              <div className="relative z-10 max-w-3xl space-y-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                  <Sparkles className="w-3.5 h-3.5" /> الصرافة الرسمية الأولى المعتمدة - فرع سمالوط
+            {/* Form Column */}
+            <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-amber-400 flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-amber-500" /> حجز تذكرة انتظار ذكية
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-1">سجل بياناتك وسيصلك رقم دورك وإشعارات التحديث مباشرة على الواتساب</p>
+                </div>
+                <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full">
+                  خدمة فورية بدون زحام
                 </span>
-                <h2 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">
-                  خدمة صرافة سريعة، أسعار <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500">بنك مصر اللحظية</span>، ودون انتظار
-                </h2>
-                <p className="text-slate-300 text-sm md:text-base leading-relaxed">
-                  نقدم لكم أحدث نظام صرف آلي وخدمات ذكية لتقليل زمن انتظار العميل. حدد مبلغك مسبقاً، احجز دورك، واحصل على إشعار الواتساب الفوري قبل وصولك للشباك.
-                </p>
-
-                <div className="flex flex-wrap gap-3 pt-2">
-                  <button 
-                    onClick={() => setActiveTab('queue')}
-                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-bold shadow-lg shadow-amber-500/25 flex items-center gap-2 transition-all"
-                  >
-                    <Ticket className="w-5 h-5" />
-                    <span>خذ رقم دورك الآن</span>
-                  </button>
-
-                  <button 
-                    onClick={() => setActiveTab('rates')}
-                    className="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-semibold border border-amber-500/30 flex items-center gap-2 transition-all"
-                  >
-                    <Calculator className="w-5 h-5" />
-                    <span>أسعار العملات والتحويل</span>
-                  </button>
-                </div>
               </div>
-            </div>
 
-            {/* Quick Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-5 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/20">
-                  <Clock className="w-6 h-6" />
-                </div>
+              <form onSubmit={handleIssueTicket} className="space-y-5">
                 <div>
-                  <div className="text-xs text-slate-400">ساعات العمل الأسبوعية</div>
-                  <div className="text-sm font-bold text-white mt-1">8:00 ص - 9:00 م يومياً</div>
-                  <div className="text-[11px] text-amber-400 mt-0.5">الجمعة: 1:30 م - 9:00 م</div>
-                </div>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
-                  <Zap className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="text-xs text-slate-400">متوسط زمن الخدمة</div>
-                  <div className="text-sm font-bold text-white mt-1">{avgServiceTime} دقيقة لكل عميل</div>
-                  <div className="text-[11px] text-emerald-400">مسار سريع متوفر للعمليات البسيطة</div>
-                </div>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20">
-                  <Phone className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="text-xs text-slate-400">أرقام التواصل المباشرة</div>
-                  <div className="text-xs font-bold text-amber-300 mt-1 dir-ltr text-right">086-3446509</div>
-                  <div className="text-xs font-bold text-amber-300 dir-ltr text-right">086-3446519</div>
-                </div>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/20">
-                  <ShieldCheck className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="text-xs text-slate-400">تحديث الأسعار</div>
-                  <div className="text-sm font-bold text-white mt-1">مطابق لبنك مصر</div>
-                  <div className="text-[11px] text-slate-400">تحديث حي لحظي متواصل</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Branch Details & Location Map Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              
-              {/* Branch Schedule & Phone Calls Info */}
-              <div className="p-6 rounded-2xl bg-slate-800/60 border border-slate-700 space-y-4">
-                <h3 className="text-lg font-bold text-amber-400 flex items-center gap-2 border-b border-slate-700 pb-3">
-                  <Building2 className="w-5 h-5" /> تفاصيل فرع سمالوط
-                </h3>
-
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                    <div>
-                      <div className="font-semibold text-white">العنوان الدقيق:</div>
-                      <p className="text-slate-300 text-xs mt-0.5">شارع الشريعي / وسط المدينة - جوار المنطقة التجاريّة، سمالوط، محافظة المنيا.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                    <div>
-                      <div className="font-semibold text-white">مواعيد العمل الرسمية:</div>
-                      <ul className="text-slate-300 text-xs space-y-1 mt-1">
-                        <li className="flex justify-between">
-                          <span>السبت - الخميس:</span>
-                          <span className="text-amber-300 font-bold">8:00 صباحاً - 9:00 مساءً</span>
-                        </li>
-                        <li className="flex justify-between">
-                          <span>يوم الجمعة:</span>
-                          <span className="text-amber-300 font-bold">من بعد صلاة الجمعة (1:30 م) - 9:00 مساءً</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 pt-2">
-                    <Phone className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                    <div className="w-full">
-                      <div className="font-semibold text-white">الاتصال الفوري بالفرع:</div>
-                      <div className="grid grid-cols-1 gap-2 mt-2">
-                        <a 
-                          href="tel:0863446509" 
-                          className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900 border border-amber-500/30 text-amber-300 hover:bg-amber-500/10 font-bold transition-all text-xs"
-                        >
-                          <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> الخط المباشر 1</span>
-                          <span className="dir-ltr">086-3446509</span>
-                        </a>
-                        <a 
-                          href="tel:0863446519" 
-                          className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900 border border-amber-500/30 text-amber-300 hover:bg-amber-500/10 font-bold transition-all text-xs"
-                        >
-                          <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> الخط المباشر 2</span>
-                          <span className="dir-ltr">086-3446519</span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* GPS Map View */}
-              <div className="lg:col-span-2 p-6 rounded-2xl bg-slate-800/60 border border-slate-700 flex flex-col justify-between space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-700 pb-3">
-                  <h3 className="text-lg font-bold text-amber-400 flex items-center gap-2">
-                    <Navigation className="w-5 h-5" /> موقع الفرع على الخريطة (GPS)
-                  </h3>
-                  <a 
-                    href="https://maps.google.com/?q=Samalut,Minya,Egypt" 
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="text-xs bg-amber-500 text-slate-950 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 hover:bg-amber-400 transition-all"
-                  >
-                    <span>فتح في Google Maps</span>
-                  </a>
-                </div>
-
-                {/* Map Box Component */}
-                <div className="relative w-full h-64 md:h-80 rounded-xl overflow-hidden border border-slate-700 bg-slate-950 flex items-center justify-center">
-                  <iframe
-                    title="موقع فرع سمالوط"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d28000!2d30.7100!3d28.3100!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145b23d9a1f2b3c1%3A0x123456789abcdef!2sSamalut%2C%20Minya%20Governorate%2C%20Egypt!5e0!3m2!1sen!2seg!4v1620000000000!5m2!1sen!2seg"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg)' }}
-                    allowFullScreen=""
-                    loading="lazy"
-                  ></iframe>
-
-                  <div className="absolute bottom-3 right-3 bg-slate-950/90 border border-amber-500/40 p-3 rounded-xl shadow-xl flex items-center gap-3 backdrop-blur-sm max-w-xs">
-                    <div className="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></div>
-                    <div>
-                      <div className="text-xs font-bold text-white">شركة الصرافة المصرية - فرع سمالوط</div>
-                      <div className="text-[10px] text-slate-400">مفتوح الآن لتلبية جميع معاملاتكم</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-        )}
-
-        {}
-        {activeTab === 'rates' && (
-          <div className="space-y-6">
-            
-            {/* Header & Live Refresh */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-slate-800/80 border border-slate-700">
-              <div>
-                <h2 className="text-xl font-bold text-amber-400 flex items-center gap-2">
-                  <TrendingUp className="w-6 h-6" /> أسعار العملات المحدثة لحظياً
-                </h2>
-                <p className="text-xs text-slate-400 mt-1">
-                  الأسعار متطابقة مباشرة مع مؤشرات بنك مصر والسوق المصرفي الرسمي.
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-slate-400">آخر تحديث: <strong className="text-amber-300">{lastUpdated}</strong></span>
-                <button 
-                  onClick={fetchRates}
-                  disabled={loadingRates}
-                  className="p-2.5 bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 rounded-xl flex items-center gap-1.5 text-xs font-bold transition-all disabled:opacity-50"
-                >
-                  <RefreshCw className={`w-4 h-4 ${loadingRates ? 'animate-spin' : ''}`} />
-                  <span>تحديث الآن</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              
-              {/* Currency Rates Table */}
-              <div className="lg:col-span-2 bg-slate-800/60 rounded-2xl border border-slate-700 overflow-hidden">
-                <div className="p-4 bg-slate-900 border-b border-slate-700 flex justify-between items-center">
-                  <span className="font-bold text-sm text-white">جدول الأسعار مقابل الجنيه المصري (EGP)</span>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                    أسعار الشباك الرسمية
-                  </span>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-right text-sm">
-                    <thead className="bg-slate-950 text-slate-400 text-xs uppercase">
-                      <tr>
-                        <th className="p-3.5">العملة</th>
-                        <th className="p-3.5 text-emerald-400">سعر الشراء (نشتري منك)</th>
-                        <th className="p-3.5 text-amber-400">سعر البيع (نبيع لك)</th>
-                        <th className="p-3.5 text-center">التغير</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-700/50">
-                      {rates.map((r) => (
-                        <tr key={r.code} className="hover:bg-slate-800/80 transition-colors">
-                          <td className="p-3.5 flex items-center gap-2.5 font-bold text-white">
-                            <span className="text-xl">{r.flag}</span>
-                            <div>
-                              <div>{r.code}</div>
-                              <div className="text-[11px] text-slate-400 font-normal">{r.name}</div>
-                            </div>
-                          </td>
-                          <td className="p-3.5 font-extrabold text-emerald-400 text-base">
-                            {r.buy.toFixed(2)} <span className="text-xs text-slate-400">ج.م</span>
-                          </td>
-                          <td className="p-3.5 font-extrabold text-amber-400 text-base">
-                            {r.sell.toFixed(2)} <span className="text-xs text-slate-400">ج.م</span>
-                          </td>
-                          <td className="p-3.5 text-center">
-                            <span className={`inline-block px-2 py-0.5 rounded text-xs font-mono font-bold ${
-                              r.change.startsWith('+') ? 'bg-emerald-500/10 text-emerald-400' :
-                              r.change.startsWith('-') ? 'bg-rose-500/10 text-rose-400' : 'bg-slate-700 text-slate-300'
-                            }`}>
-                              {r.change}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Interactive Exchange Calculator */}
-              <div className="p-6 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-5">
-                <div className="border-b border-slate-700 pb-3">
-                  <h3 className="text-lg font-bold text-amber-400 flex items-center gap-2">
-                    <Calculator className="w-5 h-5" /> الآلة الحاسبة التفاعلية
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-1">حساب التكلفة الدقيقة بناءً على أسعار الشباك الحالية.</p>
-                </div>
-
-                {/* Buy vs Sell Switcher */}
-                <div className="grid grid-cols-2 gap-2 p-1 bg-slate-900 rounded-xl border border-slate-700 text-xs font-bold">
-                  <button
-                    onClick={() => setCalcType('sell')}
-                    className={`py-2 rounded-lg transition-all ${
-                      calcType === 'sell' 
-                        ? 'bg-amber-500 text-slate-950 shadow-md' 
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    تريد شراء عملة (من الصرافة)
-                  </button>
-                  <button
-                    onClick={() => setCalcType('buy')}
-                    className={`py-2 rounded-lg transition-all ${
-                      calcType === 'buy' 
-                        ? 'bg-emerald-500 text-slate-950 shadow-md' 
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    تريد بيع عملة (للصرافة)
-                  </button>
-                </div>
-
-                {/* Amount Input */}
-                <div className="space-y-1.5">
-                  <label className="text-xs text-slate-300 font-semibold">المبلغ بالعملة الأجنبية:</label>
-                  <input 
-                    type="number"
-                    min="1"
-                    value={calcAmount}
-                    onChange={(e) => setCalcAmount(Math.max(1, parseFloat(e.target.value) || 0))}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white font-bold text-lg focus:border-amber-500 outline-none"
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">الاسم بالكامل</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="مثال: أحمد محمد علي"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
                   />
                 </div>
 
-                {/* Currency Selection */}
-                <div className="space-y-1.5">
-                  <label className="text-xs text-slate-300 font-semibold">اختر العملة:</label>
-                  <select
-                    value={calcCurrency}
-                    onChange={(e) => setCalcCurrency(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white font-bold text-sm focus:border-amber-500 outline-none"
-                  >
-                    {rates.map(r => (
-                      <option key={r.code} value={r.code}>
-                        {r.flag} {r.name} ({r.code})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Result Display Box */}
-                <div className="p-4 rounded-xl bg-gradient-to-br from-slate-950 to-slate-900 border border-amber-500/30 text-center space-y-1">
-                  <span className="text-xs text-slate-400">الإجمالي بالجنيه المصري:</span>
-                  <div className="text-3xl font-black text-amber-400">
-                    {calculatedResult} <span className="text-sm font-normal text-slate-300">ج.م</span>
-                  </div>
-                  <div className="text-[11px] text-slate-500 pt-1">
-                    السعر المعتمد: {calcType === 'sell' ? selectedRateObj.sell : selectedRateObj.buy} ج.م لكل 1 {selectedRateObj.code}
-                  </div>
-                </div>
-
-                <button 
-                  onClick={() => {
-                    setPreOrder({ currency: calcCurrency, amount: calcAmount.toString(), note: '' });
-                    setActiveTab('queue');
-                  }}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-bold shadow-lg shadow-amber-500/20 text-sm flex items-center justify-center gap-2 transition-all"
-                >
-                  <Zap className="w-4 h-4" />
-                  <span>تجهيز وصرف هذا المبلغ فورياً</span>
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-        )}
-
-        {}
-        {activeTab === 'queue' && (
-          <div className="space-y-6">
-
-            {/* Registration Box if not registered */}
-            {!isRegistered ? (
-              <div className="max-w-xl mx-auto p-6 md:p-8 rounded-3xl bg-slate-800/80 border border-amber-500/40 shadow-2xl space-y-5">
-                <div className="text-center space-y-2">
-                  <div className="w-14 h-14 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center mx-auto border border-amber-500/30">
-                    <Smartphone className="w-7 h-7" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white">تسجيل الدخول لتلقي تنبيهات الدور</h3>
-                  <p className="text-xs text-slate-400">
-                    أدخل بياناتك لتصلك إشعارات الواتساب عند إطلاق رقم الدور وعند تبقي 5 عملاء فقط على الشباك.
-                  </p>
-                </div>
-
-                <form onSubmit={handleRegister} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">الاسم بالكامل:</label>
-                    <input 
-                      type="text" 
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">رقم الواتساب (مع كود الدولة)</label>
+                  <div className="relative">
+                    <input
+                      type="tel"
                       required
-                      placeholder="مثال: أحمد محمد علي"
-                      value={user.name}
-                      onChange={(e) => setUser({ ...user, name: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white text-sm focus:border-amber-500 outline-none"
+                      placeholder="010XXXXXXXX أو 201012345678"
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500 text-left dir-ltr"
                     />
+                    <MessageSquare className="w-4 h-4 text-emerald-500 absolute right-3 top-3" />
                   </div>
+                  <p className="text-[11px] text-slate-500 mt-1">سنرسل لك رسالة التذكرة وتنبيه اقتراب الدور على هذا الرقم.</p>
+                </div>
 
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">رقم الهاتف (المرتبط بالواتساب):</label>
-                    <input 
-                      type="tel" 
-                      required
-                      placeholder="01012345678"
-                      value={user.phone}
-                      onChange={(e) => setUser({ ...user, phone: e.target.value })}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white text-sm focus:border-amber-500 outline-none text-right dir-ltr"
-                    />
+                {/* Service Type Selection */}
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-2">نوع الخدمة والمسار</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setServiceType('standard')}
+                      className={`p-3 rounded-xl border text-right transition ${
+                        serviceType === 'standard'
+                          ? 'border-amber-500 bg-amber-500/10 text-amber-300'
+                          : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <Users className="w-5 h-5 mb-1.5 text-amber-400" />
+                      <div className="font-bold text-xs">قياسي (Standard)</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">صرف أو تحويل عادي</div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setServiceType('express')}
+                      className={`p-3 rounded-xl border text-right transition ${
+                        serviceType === 'express'
+                          ? 'border-amber-500 bg-amber-500/10 text-amber-300'
+                          : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <Zap className="w-5 h-5 mb-1.5 text-yellow-400" />
+                      <div className="font-bold text-xs">صرف مسبق (Express)</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">تجهيز النقدية مسبقاً</div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setServiceType('appointment')}
+                      className={`p-3 rounded-xl border text-right transition ${
+                        serviceType === 'appointment'
+                          ? 'border-amber-500 bg-amber-500/10 text-amber-300'
+                          : 'border-slate-800 bg-slate-950 text-slate-400 hover:border-slate-700'
+                      }`}
+                    >
+                      <Calendar className="w-5 h-5 mb-1.5 text-cyan-400" />
+                      <div className="font-bold text-xs">حجز موعد (Booking)</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">تحديد ساعة الحضور</div>
+                    </button>
                   </div>
+                </div>
 
-                  <button 
-                    type="submit"
-                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-bold shadow-lg shadow-amber-500/20 hover:brightness-110 transition-all text-sm"
-                  >
-                    متابعة كعميل في فرع سمالوط
-                  </button>
-                </form>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                
-                {/* User Active Ticket Banner if exists */}
-                {myTicket && (
-                  <div className="p-6 rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-blue-950 border-2 border-amber-500/50 shadow-2xl relative overflow-hidden">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                      
-                      <div className="space-y-2 text-center md:text-right">
-                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 inline-flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> تذكرتك الرقمية المفعلة
-                        </span>
-                        <h3 className="text-2xl font-bold text-white">أهلاً بك، {user.name}</h3>
-                        <p className="text-xs text-slate-400">
-                          نوع الخدمة: <strong className="text-amber-300">{myTicket.type}</strong>
-                          {myTicket.amount && ` (${myTicket.amount} ${myTicket.currency})`}
-                        </p>
+                {/* Conditional Fields for Express or Appointment */}
+                {serviceType === 'express' && (
+                  <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 space-y-3">
+                    <h4 className="text-xs font-bold text-amber-400 flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5" /> تفاصيل الصرف المسبق السريع
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] text-slate-400 mb-1">العملة المطلوب صرفها</label>
+                        <select
+                          value={selectedCurrency}
+                          onChange={(e) => setSelectedCurrency(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200"
+                        >
+                          {currencies.map(c => <option key={c.code} value={c.code}>{c.flag} {c.name} ({c.code})</option>)}
+                        </select>
                       </div>
-
-                      {/* Ticket Number Badge */}
-                      <div className="p-5 rounded-2xl bg-slate-900/90 border border-amber-500/40 text-center space-y-1 shadow-inner">
-                        <span className="text-xs text-slate-400">رقم دورك الإلكتروني</span>
-                        <div className="text-4xl font-black text-amber-400 tracking-wider">
-                          {myTicket.number}
-                        </div>
-                        <span className="text-[10px] text-emerald-400 block font-semibold">
-                          {myTicket.fastTrack ? '⚡ المسار السريع' : 'مسار عادي'}
-                        </span>
+                      <div>
+                        <label className="block text-[11px] text-slate-400 mb-1">المبلغ المبدئي</label>
+                        <input
+                          type="number"
+                          value={expectedAmount}
+                          onChange={(e) => setExpectedAmount(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200"
+                        />
                       </div>
-
-                      {/* Status Distance Tracker */}
-                      <div className="text-center md:text-left space-y-1">
-                        <div className="text-xs text-slate-400">الرقم الحالي على الشباك:</div>
-                        <div className="text-2xl font-bold text-white">A-{currentTicketNumber}</div>
-                        <div className="text-xs text-amber-300 font-bold">
-                          المتبقي قبل دورك: {Math.max(0, parseInt(myTicket.number.split('-')[1]) - currentTicketNumber)} عملاء
-                        </div>
-                      </div>
-
                     </div>
                   </div>
                 )}
 
-                {/* Queue Services Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {serviceType === 'appointment' && (
+                  <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-xl p-4 space-y-3">
+                    <h4 className="text-xs font-bold text-cyan-400 flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5" /> وقت الحضور المفضل بالفرع
+                    </h4>
+                    <input
+                      type="time"
+                      value={appointmentTime}
+                      onChange={(e) => setAppointmentTime(e.target.value)}
+                      className="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 w-full"
+                    />
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-bold py-3 px-6 rounded-xl shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2 text-sm"
+                >
+                  <Send className="w-4 h-4" /> إصدار تذكرة الدور وإرسال للواتساب
+                </button>
+              </form>
+            </div>
+
+            {/* Ticket Preview & Digital Card Column */}
+            <div className="lg:col-span-5 space-y-6">
+              
+              {/* Issued Ticket Card */}
+              {myTicket ? (
+                <div className="bg-slate-900 border-2 border-amber-500/50 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+                  <div className="absolute -left-12 -top-12 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl"></div>
                   
-                  {/* Service 1: Instant Quick Queue */}
-                  <div className="p-6 rounded-2xl bg-slate-800/70 border border-slate-700 flex flex-col justify-between space-y-4 hover:border-amber-500/40 transition-all">
-                    <div className="space-y-3">
-                      <div className="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20">
-                        <Ticket className="w-6 h-6" />
-                      </div>
-                      <h3 className="text-lg font-bold text-white">1. دور عادي مباشر</h3>
-                      <p className="text-xs text-slate-400 leading-relaxed">
-                        إصدار دور إلكتروني فوري للخدمات العامة وصرف العملات المتنوعة داخل الشباك الرئيسي.
-                      </p>
+                  <div className="flex justify-between items-start border-b border-slate-800 pb-4 mb-4">
+                    <div>
+                      <span className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">تذكرة انتظار رقمية</span>
+                      <h3 className="text-lg font-bold text-slate-100">{myTicket.name}</h3>
+                      <p className="text-xs text-slate-400">{myTicket.phone}</p>
                     </div>
-
-                    <button 
-                      onClick={() => handleTakeTicket(false)}
-                      className="w-full py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-amber-300 font-bold text-xs border border-amber-500/30 transition-all"
-                    >
-                      سحب رقم دور فوري
-                    </button>
+                    <span className="bg-amber-500 text-slate-950 text-xs font-bold px-2.5 py-1 rounded-md">
+                      {myTicket.serviceType === 'express' ? 'مسار سريع' : myTicket.serviceType === 'appointment' ? 'حجز موعد' : 'مسار قياسي'}
+                    </span>
                   </div>
 
-                  {/* Service 2: Pre-order Cash Express */}
-                  <div className="p-6 rounded-2xl bg-slate-800/70 border border-slate-700 flex flex-col justify-between space-y-4 border-amber-500/30 hover:border-amber-500/60 transition-all">
-                    <div className="space-y-3">
-                      <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
-                        <Zap className="w-6 h-6" />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-bold text-white">2. خدمة الصرف المسبق</h3>
-                        <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold">المسار السريع</span>
-                      </div>
-                      <p className="text-xs text-slate-400 leading-relaxed">
-                        حدد المبلغ والعملة مسبقاً لتجهيز السيولة قبل وصولك، ليكون دور الموظف هو التأكيد والتسليم الفوري.
-                      </p>
-
-                      <div className="space-y-2 pt-2">
-                        <div className="grid grid-cols-2 gap-2">
-                          <select 
-                            value={preOrder.currency}
-                            onChange={(e) => setPreOrder({ ...preOrder, currency: e.target.value })}
-                            className="bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white"
-                          >
-                            {rates.map(r => <option key={r.code} value={r.code}>{r.code}</option>)}
-                          </select>
-                          <input 
-                            type="number"
-                            placeholder="المبلغ"
-                            value={preOrder.amount}
-                            onChange={(e) => setPreOrder({ ...preOrder, amount: e.target.value })}
-                            className="bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white"
-                          />
-                        </div>
-                      </div>
+                  <div className="text-center py-6 bg-slate-950 rounded-xl border border-slate-800/80 my-4">
+                    <div className="text-xs text-slate-400 mb-1">رقم الدور الخاص بك</div>
+                    <div className="text-5xl font-extrabold text-amber-400 tracking-wider font-mono">#{myTicket.id}</div>
+                    <div className="text-xs text-emerald-400 mt-2 flex items-center justify-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> تم إرسال تفاصيل الرقم إلى تطبيق WhatsApp
                     </div>
-
-                    <button 
-                      onClick={() => handleTakeTicket(true, { type: 'صرف مسبق تجهيز سريع', ...preOrder })}
-                      className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs shadow-md transition-all"
-                    >
-                      تجهيز الطلب وحجز المسار السريع
-                    </button>
                   </div>
 
-                  {/* Service 3: Pre-booked Appointment */}
-                  <div className="p-6 rounded-2xl bg-slate-800/70 border border-slate-700 flex flex-col justify-between space-y-4 hover:border-amber-500/40 transition-all">
-                    <div className="space-y-3">
-                      <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20">
-                        <Calendar className="w-6 h-6" />
-                      </div>
-                      <h3 className="text-lg font-bold text-white">3. حجز موعد مسبق</h3>
-                      <p className="text-xs text-slate-400 leading-relaxed">
-                        اختر الوقت واليوم المناسب للحضور المباشر دون انتظار نهائياً بالفرع.
-                      </p>
-
-                      <div className="space-y-2 pt-2">
-                        <input 
-                          type="date"
-                          value={appointment.date}
-                          onChange={(e) => setAppointment({ ...appointment, date: e.target.value })}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white"
-                        />
-                        <select 
-                          value={appointment.time}
-                          onChange={(e) => setAppointment({ ...appointment, time: e.target.value })}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs text-white"
-                        >
-                          <option value="09:00">09:00 صباحاً</option>
-                          <option value="11:30">11:30 صباحاً</option>
-                          <option value="14:00">02:00 ظهراً</option>
-                          <option value="17:00">05:00 مساءً</option>
-                          <option value="19:30">07:30 مساءً</option>
-                        </select>
-                      </div>
+                  <div className="grid grid-cols-2 gap-3 text-xs text-slate-300">
+                    <div className="bg-slate-950/50 p-2.5 rounded-lg border border-slate-800">
+                      <span className="text-slate-500 block text-[10px]">عدد المنتظرين قبلك</span>
+                      <strong className="text-slate-100 text-sm">{myTicket.aheadCount} عملاء</strong>
                     </div>
-
-                    <button 
-                      onClick={() => handleTakeTicket(true, { type: `حجز موعد (${appointment.time})`, time: appointment.time })}
-                      className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-all"
-                    >
-                      تأكيد حجز الموعد المباشر
-                    </button>
+                    <div className="bg-slate-950/50 p-2.5 rounded-lg border border-slate-800">
+                      <span className="text-slate-500 block text-[10px]">الوقت المتوقع للدخول</span>
+                      <strong className="text-amber-300 text-sm">{myTicket.estimatedWait} دقائق تقريبا</strong>
+                    </div>
                   </div>
 
+                  <div className="mt-4 pt-4 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+                    <span>فرع سمالوط - الشباك 1-4</span>
+                    <span>وقت الإصدار: {myTicket.time}</span>
+                  </div>
                 </div>
+              ) : (
+                <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-8 text-center space-y-3">
+                  <div className="w-16 h-16 bg-slate-800/80 rounded-2xl flex items-center justify-center mx-auto text-amber-400">
+                    <Zap className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-200">لم يتم قطع تذكرة بعد</h3>
+                  <p className="text-xs text-slate-400 max-w-xs mx-auto">
+                    قم بملء النموذج المجاور للحصول على كارت رقم الدور الإلكتروني واستلام الإشعارات على هاتفك مباشرة.
+                  </p>
+                </div>
+              )}
 
+              {/* Status & WhatsApp Live Logs Panel */}
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
+                <h3 className="text-xs font-bold text-slate-300 mb-3 flex items-center gap-2 border-b border-slate-800 pb-2">
+                  <MessageSquare className="w-4 h-4 text-emerald-400" /> سجل إرسال رسائل WhatsApp الحية
+                </h3>
+                <div className="bg-slate-950 border border-slate-800 rounded-xl p-3 h-48 overflow-y-auto font-mono text-[11px] text-slate-400 space-y-1.5">
+                  {sendLogs.length === 0 ? (
+                    <div className="text-slate-600 text-center py-12">لا توجد رسائل مرسلة بعد...</div>
+                  ) : (
+                    sendLogs.map((log, index) => (
+                      <div key={index} className="border-b border-slate-900 pb-1 text-emerald-300/90 leading-relaxed">
+                        {log}
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
-            )}
+
+            </div>
 
           </div>
         )}
 
-        {}
-        {activeTab === 'display' && (
-          <div className="space-y-6">
+        {/* TAB 2: CURRENCY EXCHANGE RATES & CALCULATOR */}
+        {activeTab === 'rates' && (
+          <div className="space-y-8">
             
-            <div className="text-center max-w-xl mx-auto space-y-2">
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                الشاشة المباشرة لفرع سمالوط
-              </span>
-              <h2 className="text-2xl font-extrabold text-white">الأرقام التي يتم خدمتها الآن على الشبابيك</h2>
-              <p className="text-xs text-slate-400">تحدث القائمة تلقائياً عند نداء كل عميل لتفادي التكدس.</p>
+            {/* Currency Rates Table Header */}
+            <div className="flex flex-wrap justify-between items-center gap-4 bg-slate-900 p-6 rounded-2xl border border-slate-800">
+              <div>
+                <h2 className="text-xl font-bold text-amber-400 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" /> أسعار العملات الأجنبية اليوم (فرع سمالوط)
+                </h2>
+                <p className="text-xs text-slate-400 mt-1">أسعار حية ومحدثة طبقاً لتعليمات بنك مصر والبنك المركزي المصري</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-slate-400">آخر تحديث: {lastUpdated}</span>
+                <button
+                  onClick={handleRefreshRates}
+                  className="bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" /> تحديث الأسعار الان
+                </button>
+              </div>
             </div>
 
-            {/* Serving Windows Grid */}
+            {/* Rates Table */}
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+              <div className="overflow-x-auto">
+                <table className="w-full text-right text-sm">
+                  <thead className="bg-slate-950 text-slate-400 text-xs uppercase border-b border-slate-800">
+                    <tr>
+                      <th className="px-6 py-4">العملة</th>
+                      <th className="px-6 py-4">الرمز</th>
+                      <th className="px-6 py-4 text-emerald-400">نحن نشتري منك (Buy)</th>
+                      <th className="px-6 py-4 text-amber-400">نحن نبيع لك (Sell)</th>
+                      <th className="px-6 py-4">التغير</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60">
+                    {currencies.map((curr) => (
+                      <tr key={curr.code} className="hover:bg-slate-800/40 transition">
+                        <td className="px-6 py-4 font-bold flex items-center gap-2">
+                          <span className="text-xl">{curr.flag}</span>
+                          <span className="text-slate-100">{curr.name}</span>
+                        </td>
+                        <td className="px-6 py-4 text-slate-400 font-mono text-xs">{curr.code}</td>
+                        <td className="px-6 py-4 font-bold text-emerald-400 font-mono text-base">{curr.buy.toFixed(2)} ج.م</td>
+                        <td className="px-6 py-4 font-bold text-amber-400 font-mono text-base">{curr.sell.toFixed(2)} ج.م</td>
+                        <td className="px-6 py-4 text-xs font-mono">
+                          <span className={`px-2 py-0.5 rounded ${curr.change.startsWith('+') ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
+                            {curr.change}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Live Converter Calculator */}
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+              <h3 className="text-lg font-bold text-amber-400 mb-4 flex items-center gap-2">
+                <Calculator className="w-5 h-5" /> الحاسبة التفاعلية السريعة للتحويل
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1.5">نوع العملية</label>
+                  <select
+                    value={calcType}
+                    onChange={(e) => setCalcType(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200"
+                  >
+                    <option value="buy">نستبدل منك عملة أجنبية بـ (جنيه مصري)</option>
+                    <option value="sell">تشتري منا عملة أجنبية مقابل (جنيه مصري)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1.5">العملة الأجنبية</label>
+                  <select
+                    value={calcCurrency}
+                    onChange={(e) => setCalcCurrency(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200"
+                  >
+                    {currencies.map(c => (
+                      <option key={c.code} value={c.code}>{c.flag} {c.name} ({c.code})</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1.5">المبلغ بالعملة الأجنبية</label>
+                  <input
+                    type="number"
+                    value={calcAmount}
+                    onChange={(e) => setCalcAmount(Math.max(1, +e.target.value))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-100 font-mono"
+                  />
+                </div>
+
+                <div className="bg-slate-950 p-3 rounded-xl border border-amber-500/30 text-center">
+                  <span className="text-[10px] text-slate-400 block">المبلغ الإجمالي بالجنيه المصري</span>
+                  <strong className="text-xl font-bold text-amber-400 font-mono">{calculatedTotal} EGP</strong>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* TAB 3: LIVE MONITOR & COUNTER MANAGEMENT */}
+        {activeTab === 'monitor' && (
+          <div className="space-y-8">
+            <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-bold text-amber-400 flex items-center gap-2">
+                  <Monitor className="w-5 h-5 text-amber-400" /> شاشة الصالة الرئيسية وإدارة الشبابيك (سمالوط)
+                </h2>
+                <p className="text-xs text-slate-400 mt-1">تحديد الأرقام الحالية ومتابعة مؤشر أداء الصرافين (KPIs)</p>
+              </div>
+              <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs px-3 py-1.5 rounded-xl font-mono">
+                متوسط زمن الخدمة لكل عميل: {kpiAvgTime} ثانية
+              </div>
+            </div>
+
+            {/* Counters Display Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {servingQueue.map((item, idx) => (
-                <div 
-                  key={idx}
-                  className="p-6 rounded-3xl bg-slate-800/90 border-2 border-amber-500/30 shadow-xl space-y-4 text-center relative overflow-hidden group hover:border-amber-500 transition-all"
-                >
-                  <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">{item.window}</div>
-                  
-                  <div className="p-4 rounded-2xl bg-slate-950 border border-amber-500/40 text-4xl font-black text-amber-400 shadow-inner tracking-widest">
-                    {item.number}
+              {[
+                { name: 'شباك 1 (الصرف والتحويلات)', key: 'counter1', color: 'border-amber-500' },
+                { name: 'شباك 2 (صرف العملات)', key: 'counter2', color: 'border-amber-500' },
+                { name: 'شباك 3 (العملاء المميزين)', key: 'counter3', color: 'border-cyan-500' },
+                { name: 'شباك 4 (المسار السريع)', key: 'counter4', color: 'border-yellow-500' },
+              ].map((cnt) => (
+                <div key={cnt.key} className={`bg-slate-900 border-2 ${cnt.color} rounded-2xl p-5 text-center shadow-xl relative`}>
+                  <h4 className="text-xs font-bold text-slate-300 mb-2">{cnt.name}</h4>
+                  <div className="text-xs text-slate-500 mb-1">العميل الحالي</div>
+                  <div className="text-5xl font-extrabold text-amber-400 font-mono py-4 bg-slate-950 rounded-xl my-2 border border-slate-800">
+                    #{currentServing[cnt.key]}
                   </div>
 
-                  <div className="space-y-1">
-                    <div className="text-sm font-bold text-white">{item.client}</div>
-                    <div className="text-xs text-amber-300">{item.service}</div>
-                  </div>
-
-                  <div className="flex items-center justify-center gap-1.5 text-slate-400 text-xs border-t border-slate-700/60 pt-3">
-                    <Timer className="w-3.5 h-3.5 text-amber-400" />
-                    <span>مضي على العملية: {item.time}</span>
-                  </div>
+                  <button
+                    onClick={() => handleNextCustomer(cnt.key)}
+                    className="w-full mt-3 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-200 text-xs font-bold py-2 px-3 rounded-lg transition flex items-center justify-center gap-1.5"
+                  >
+                    <ArrowRight className="w-3.5 h-3.5" /> استدعاء الرقم التالي
+                  </button>
                 </div>
               ))}
             </div>
 
-            {/* Public Instructions */}
-            <div className="p-4 rounded-2xl bg-slate-800/40 border border-slate-700 flex items-center gap-3 text-xs text-slate-300">
-              <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
-              <span>
-                يرجى التجهز للتوجه إلى الشباك فور ظهور رقمك على الشاشة. العملاء أصحاب الطلبات المجهزة مسبقاً يتوجهون مباشرة لمسار Fast Track.
-              </span>
+            {/* Waiting Queue List */}
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+              <h3 className="text-base font-bold text-slate-200 mb-4 flex items-center gap-2">
+                <Users className="w-4 h-4 text-amber-400" /> قائمة انتظار العملاء بالصالة ({queueList.length} عملاء)
+              </h3>
+
+              <div className="divide-y divide-slate-800">
+                {queueList.map((item) => (
+                  <div key={item.id} className="py-3 flex justify-between items-center text-xs">
+                    <div className="flex items-center gap-3">
+                      <span className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 font-bold font-mono flex items-center justify-center">
+                        #{item.id}
+                      </span>
+                      <div>
+                        <strong className="text-slate-200 block">{item.name}</strong>
+                        <span className="text-slate-500">{item.phone}</span>
+                      </div>
+                    </div>
+                    <span className="bg-slate-950 text-slate-400 border border-slate-800 px-3 py-1 rounded-full text-[11px]">
+                      {item.type}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
 
           </div>
         )}
 
-        {}
-        {activeTab === 'admin' && (
-          <div className="space-y-6">
+        {/* TAB 4: WHATSAPP API LIVE CONFIGURATION */}
+        {activeTab === 'api-config' && (
+          <div className="max-w-4xl mx-auto space-y-6">
             
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-slate-800/80 border border-slate-700">
-              <div>
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+              <div className="border-b border-slate-800 pb-4 mb-6">
                 <h2 className="text-xl font-bold text-amber-400 flex items-center gap-2">
-                  <Activity className="w-6 h-6" /> لوحة تتبع الأداء وتوزيع الضغط (Branch Dashboard)
+                  <Settings className="w-5 h-5" /> إعدادات ربط WhatsApp API الحقيقية
                 </h2>
-                <p className="text-xs text-slate-400 mt-1">أدوات ذكية لاكتشاف نقاط البطء وتوجيه العملاء للمسارات السريعة.</p>
+                <p className="text-xs text-slate-400 mt-1">
+                  أدخل مفاتيح الاشتراك الخاصة بك من UltraMsg أو GreenAPI لتفعيل إرسال رسائل التذاكر الحقيقية إلى هاتفك بدلاً من المحاكاة!
+                </p>
               </div>
 
-              <div className="flex gap-2">
-                <span className="px-3 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-bold">
-                  الحالة: متوازن ممتاز
-                </span>
-              </div>
-            </div>
+              {/* Status Alert */}
+              {waStatus.message && (
+                <div className={`p-4 rounded-xl text-xs mb-6 border flex items-center gap-2 ${
+                  waStatus.type === 'error' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
+                  waStatus.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                  'bg-amber-500/10 text-amber-300 border-amber-500/20'
+                }`}>
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{waStatus.message}</span>
+                </div>
+              )}
 
-            {/* Key Performance Indicators (KPIs) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              
-              <div className="p-5 rounded-2xl bg-slate-800/70 border border-slate-700 space-y-2">
-                <span className="text-xs text-slate-400">متوسط وقت العملية (Handling Time)</span>
-                <div className="text-3xl font-black text-amber-400">{avgServiceTime} دقيقة</div>
-                <div className="text-[11px] text-emerald-400">أسرع بـ 15% من المعدل المعتاد</div>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-slate-800/70 border border-slate-700 space-y-2">
-                <span className="text-xs text-slate-400">إجمالي العمليات المنفذة اليوم</span>
-                <div className="text-3xl font-black text-white">{totalServedToday} عملية</div>
-                <div className="text-[11px] text-slate-400">في فرع سمالوط</div>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-slate-800/70 border border-slate-700 space-y-2">
-                <span className="text-xs text-slate-400">المنتظرين في صالة الانتظار الآن</span>
-                <div className="text-3xl font-black text-blue-400">{waitingCount} عميل</div>
-                <div className="text-[11px] text-amber-400">4 منهم بالمسار السريع</div>
-              </div>
-
-            </div>
-
-            {/* Smart Workload Balancer Status */}
-            <div className="p-6 rounded-2xl bg-slate-800/60 border border-slate-700 space-y-4">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Layers className="w-5 h-5 text-amber-400" /> توجيه العملاء التلقائي بين الشبابيك
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-slate-900 border border-slate-700 space-y-2">
-                  <div className="flex justify-between text-xs">
-                    <span className="font-bold text-amber-300">مسار الصرف المسبق السريع</span>
-                    <span className="text-emerald-400">ضغط منخفض (1.2 د/عميل)</span>
+              <div className="space-y-5">
+                
+                {/* Enable Switch */}
+                <div className="flex items-center justify-between p-4 bg-slate-950 rounded-xl border border-slate-800">
+                  <div>
+                    <strong className="text-sm text-slate-200 block">تفعيل الإرسال الحقيقي (Live Messaging)</strong>
+                    <span className="text-xs text-slate-500">عند تفعيله، سيقوم الموقع بطلب API مباشرة لإرسال رسائل WhatsApp حقيقية للعميل.</span>
                   </div>
-                  <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-                    <div className="bg-emerald-500 h-full w-1/4"></div>
-                  </div>
-                  <p className="text-[11px] text-slate-400">يتم توجيه جميع العمليات المجهزة بالكامل عبر هذا المسار.</p>
+                  <input
+                    type="checkbox"
+                    checked={waConfig.enabled}
+                    onChange={(e) => setWaConfig(prev => ({ ...prev, enabled: e.target.checked }))}
+                    className="w-5 h-5 accent-amber-500 rounded cursor-pointer"
+                  />
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-900 border border-slate-700 space-y-2">
-                  <div className="flex justify-between text-xs">
-                    <span className="font-bold text-amber-300">مسار العمليات المباشرة الكبيرة</span>
-                    <span className="text-amber-400">ضغط متوسط (3.1 د/عميل)</span>
-                  </div>
-                  <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-                    <div className="bg-amber-500 h-full w-2/3"></div>
-                  </div>
-                  <p className="text-[11px] text-slate-400">توزيع مباشر على الشباك 2 و3 لضمان سلاسة الخدمة.</p>
+                {/* Gateway Provider */}
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">اختر مزيد خدمة WhatsApp API</label>
+                  <select
+                    value={waConfig.provider}
+                    onChange={(e) => setWaConfig(prev => ({ ...prev, provider: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200"
+                  >
+                    <option value="ultramsg">UltraMsg (موصى به - إعداد مجاني سريع)</option>
+                    <option value="greenapi">Green API</option>
+                  </select>
                 </div>
+
+                {/* Instance ID */}
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Instance ID</label>
+                  <input
+                    type="text"
+                    placeholder="مثال: instance102938"
+                    value={waConfig.instanceId}
+                    onChange={(e) => setWaConfig(prev => ({ ...prev, instanceId: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-100 font-mono dir-ltr text-left"
+                  />
+                </div>
+
+                {/* Token */}
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">Token / API Key</label>
+                  <input
+                    type="password"
+                    placeholder="ضع مفتاح التشفير الخاص بحسابك"
+                    value={waConfig.token}
+                    onChange={(e) => setWaConfig(prev => ({ ...prev, token: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-100 font-mono dir-ltr text-left"
+                  />
+                </div>
+
+                {/* Test Phone Number */}
+                <div>
+                  <label className="block text-xs font-medium text-slate-300 mb-1.5">رقم هاتفك للتجربة الفورية</label>
+                  <input
+                    type="tel"
+                    placeholder="2010XXXXXXXX"
+                    value={waConfig.phoneNumber}
+                    onChange={(e) => setWaConfig(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-100 font-mono dir-ltr text-left"
+                  />
+                </div>
+
+                {/* Action Buttons */}
+                <button
+                  onClick={handleTestWhatsApp}
+                  disabled={isTestingWa}
+                  className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2"
+                >
+                  <Send className="w-4 h-4" /> {isTestingWa ? 'جاري الإرسال...' : 'إرسال رسالة تجريبية الآن لرقمي'}
+                </button>
+
               </div>
+
             </div>
 
+            {/* Quick Steps Box */}
+            <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-5 text-xs text-slate-300 space-y-2">
+              <h4 className="font-bold text-amber-400 flex items-center gap-1">
+                <Sparkles className="w-4 h-4" /> كيف تحصل على حساب UltraMsg مجاني لتجربة الرسائل الحقيقية؟
+              </h4>
+              <ol className="list-decimal list-inside space-y-1 text-slate-400">
+                <li>قم بزيارة موقع <strong>UltraMsg.com</strong> وسجل حساب جديد.</li>
+                <li>قم بمسح رمز QR Code عبر تطبيق الواتساب في هاتفك لربط الجهاز.</li>
+                <li>انسخ الـ <strong>Instance ID</strong> و <strong>Token</strong> وضعهما بالنموذج أعلاه لتجربة الإرسال الحي فوراً!</li>
+              </ol>
+            </div>
+
+          </div>
+        )}
+
+        {/* TAB 5: BACKEND INTEGRATION CODE SNIPPETS */}
+        {activeTab === 'code-snippets' && (
+          <div className="space-y-6">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+              <h2 className="text-xl font-bold text-amber-400 flex items-center gap-2 mb-2">
+                <FileCode className="w-5 h-5" /> الرموز البرمجية للربط الخلفي (Backend WhatsApp Snippets)
+              </h2>
+              <p className="text-xs text-slate-400">
+                يمكنك نسخ هذه الأكواد البرمجية الجاهزة واستخدامها مباشرة في سيرفر Node.js أو Python الخاص بموقعك لإدارة الرسائل تلقائياً.
+              </p>
+
+              {/* Language Switcher */}
+              <div className="flex gap-3 mt-6 border-b border-slate-800 pb-3">
+                <button
+                  onClick={() => setSelectedLanguage('nodejs')}
+                  className={`px-4 py-2 rounded-lg text-xs font-bold transition ${
+                    selectedLanguage === 'nodejs' ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'
+                  }`}
+                >
+                  Node.js / Express
+                </button>
+                <button
+                  onClick={() => setSelectedLanguage('python')}
+                  className={`px-4 py-2 rounded-lg text-xs font-bold transition ${
+                    selectedLanguage === 'python' ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'
+                  }`}
+                >
+                  Python / Flask
+                </button>
+              </div>
+
+              {/* Code Box */}
+              <div className="relative mt-4">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(selectedLanguage === 'nodejs' ? nodejsCode : pythonCode);
+                    setCopiedSnippet(true);
+                    setTimeout(() => setCopiedSnippet(false), 2000);
+                  }}
+                  className="absolute top-3 left-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-3 py-1.5 rounded-md flex items-center gap-1 border border-slate-700"
+                >
+                  {copiedSnippet ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copiedSnippet ? 'تم النسخ!' : 'نسخ الكود'}
+                </button>
+
+                <pre className="bg-slate-950 p-5 rounded-xl border border-slate-800 font-mono text-xs text-emerald-400 overflow-x-auto leading-relaxed dir-ltr text-left">
+                  <code>{selectedLanguage === 'nodejs' ? nodejsCode : pythonCode}</code>
+                </pre>
+              </div>
+
+            </div>
           </div>
         )}
 
       </main>
 
-      {}
-      <footer className="mt-12 bg-slate-950 border-t border-slate-800 text-slate-400 text-xs py-8">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-bold">
-              <Building2 className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="font-bold text-white text-sm">شركة الصرافة المصرية - فرع سمالوط</div>
-              <div>محافظة المنيا، جميع الحقوق محفوظة © {new Date().getFullYear()}</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <span className="text-slate-500">للاتصال المباشر بالفرع:</span>
-            <a href="tel:0863446509" className="text-amber-400 hover:underline">086-3446509</a>
-            <span>|</span>
-            <a href="tel:0863446519" className="text-amber-400 hover:underline">086-3446519</a>
-          </div>
+      {/* Footer */}
+      <footer className="bg-slate-900 border-t border-slate-800 mt-12 py-6 text-center text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto px-4">
+          <p>© 2026 شركة الصرافة المصرية - فرع سمالوط (محافظة المنيا). جميع الحقوق محفوظة.</p>
+          <p className="mt-1 text-[11px] text-slate-600">نظام إدارة التذاكر الذكي والربط المباشر ببوابات WhatsApp Business API</p>
         </div>
       </footer>
 
