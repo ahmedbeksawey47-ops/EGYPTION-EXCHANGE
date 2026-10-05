@@ -14,293 +14,305 @@
         body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
         .tab-btn.active { background-color: #0B192C; color: #FFD700; border-bottom: 3px solid #D4AF37; }
         .tab-btn { background-color: #ffffff; color: #475569; }
+        /* Custom scrollbar for modern feel */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen">
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col justify-between">
 
-    <!-- Header -->
-    <header class="bg-[#0B192C] text-white shadow-xl border-b-4 border-[#D4AF37]">
-        <div class="max-w-7xl mx-auto px-4 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-                <div class="w-14 h-14 bg-gradient-to-tr from-[#D4AF37] to-[#FFD700] rounded-2xl flex items-center justify-center text-[#0B192C] font-black text-2xl shadow-lg">
-                    <i class="fa-solid fa-building-columns"></i>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-black text-[#FFD700]">شركة الصرافة المصرية</h1>
-                    <p class="text-xs text-slate-300 flex items-center gap-1.5 mt-0.5">
-                        <i class="fa-solid fa-location-dot text-[#D4AF37]"></i> فرع سمالوط - الشارع الجديد بجوار البنك الأهلي
-                    </p>
-                </div>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-2 text-xs">
-                <a href="tel:0863446509" class="bg-slate-800 hover:bg-[#D4AF37] hover:text-[#0B192C] border border-slate-700 px-3 py-2 rounded-xl transition-all font-bold flex items-center gap-2 text-white">
-                    <i class="fa-solid fa-phone text-[#D4AF37]"></i> 086-3446509
-                </a>
-                <a href="tel:0863446519" class="bg-slate-800 hover:bg-[#D4AF37] hover:text-[#0B192C] border border-slate-700 px-3 py-2 rounded-xl transition-all font-bold flex items-center gap-2 text-white">
-                    <i class="fa-solid fa-phone text-[#D4AF37]"></i> 086-3446519
-                </a>
-                <a href="https://wa.me/201003394577" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl transition-all font-bold flex items-center gap-2 shadow-md">
-                    <i class="fa-brands fa-whatsapp text-lg"></i> واتساب الفرع
-                </a>
-                <a href="https://maps.google.com/?q=Samalut+Minya+Egypt" target="_blank" class="bg-[#D4AF37] hover:bg-[#FFD700] text-[#0B192C] px-3 py-2 rounded-xl transition-all font-black flex items-center gap-2 shadow-md">
-                    <i class="fa-solid fa-map-location-dot"></i> موقع GPS
-                </a>
-            </div>
-        </div>
-
-        <div class="bg-[#1E3E62] py-2.5 px-4 text-xs text-slate-100">
-            <div class="max-w-7xl mx-auto flex flex-wrap justify-around items-center gap-2 text-center">
-                <div><i class="fa-regular fa-clock text-[#FFD700] ml-1.5"></i><strong>أوقات العمل:</strong> يومياً من 8:00 ص حتى 9:00 م (الجمعة: من بعد الصلاة حتى 9:00 م)</div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Navigation Tabs -->
-    <div class="max-w-7xl mx-auto px-4 mt-8">
-        <div class="flex border-b border-slate-300 overflow-x-auto gap-2">
-            <button onclick="switchTab('client')" id="btn-client" class="tab-btn active px-5 py-3 font-bold text-sm rounded-t-2xl transition-all shadow-md">
-                <i class="fa-solid fa-calendar-check ml-1 text-emerald-600"></i> حجز موعد للعميل
-            </button>
-            <button onclick="switchTab('rates')" id="btn-rates" class="tab-btn px-5 py-3 font-bold text-sm rounded-t-2xl transition-all shadow-md">
-                <i class="fa-solid fa-money-bill-wave ml-1 text-amber-500"></i> أسعار بنك مصر والحاسبة
-            </button>
-            <button onclick="switchTab('teller')" id="btn-teller" class="tab-btn px-5 py-3 font-bold text-sm rounded-t-2xl transition-all shadow-md">
-                <i class="fa-solid fa-user-lock ml-1 text-blue-600"></i> لوحة الصراف (مقفولة بكلمة سر)
-            </button>
-            <button onclick="switchTab('contacts')" id="btn-contacts" class="tab-btn px-5 py-3 font-bold text-sm rounded-t-2xl transition-all shadow-md">
-                <i class="fa-solid fa-address-book ml-1 text-purple-600"></i> سجل العملاء والأرقام (مقفولة)
-            </button>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 mt-8 pb-16">
-
-        <!-- TAB 1: CLIENT BOOKING (مفتوح للجميع) -->
-        <section id="tab-client" class="grid md:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
-                <h2 class="text-xl font-black text-[#0B192C] mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-days text-[#D4AF37]"></i> نموذج حجز موعد زيارة
-                </h2>
-                <p class="text-xs text-slate-500 mb-6">قم بملء البيانات لحجز موعد بالفرع، وسيتم إرسال الطلب مباشرة لواتساب الفرع (<strong class="text-emerald-600">01003394577</strong>).</p>
-
-                <form onsubmit="handleClientAppointment(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">اسم العميل بالكامل</label>
-                        <input type="text" id="client-name" required placeholder="مثال: أحمد سري" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none font-bold" />
+    <div>
+        <!-- Header -->
+        <header class="bg-[#0B192C] text-white shadow-xl border-b-4 border-[#D4AF37]">
+            <div class="max-w-7xl mx-auto px-4 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4 text-center md:text-right">
+                    <div class="w-14 h-14 bg-gradient-to-tr from-[#D4AF37] to-[#FFD700] rounded-2xl flex items-center justify-center text-[#0B192C] font-black text-2xl shadow-lg shrink-0">
+                        <i class="fa-solid fa-building-columns"></i>
                     </div>
-
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">رقم الهاتف / الواتساب</label>
-                        <input type="tel" id="client-phone" required placeholder="01012345678" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-left text-slate-900 outline-none font-bold" dir="ltr" />
+                        <h1 class="text-2xl font-black text-[#FFD700]">شركة الصرافة المصرية</h1>
+                        <p class="text-xs text-slate-300 flex items-center justify-center md:justify-start gap-1.5 mt-0.5">
+                            <i class="fa-solid fa-location-dot text-[#D4AF37]"></i> فرع سمالوط - الشارع الجديد بجوار البنك الأهلي
+                        </p>
                     </div>
+                </div>
 
-                    <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-wrap items-center justify-center gap-2 text-xs">
+                    <a href="tel:0863446509" class="bg-slate-800 hover:bg-[#D4AF37] hover:text-[#0B192C] border border-slate-700 px-3 py-2 rounded-xl transition-all font-bold flex items-center gap-2 text-white">
+                        <i class="fa-solid fa-phone text-[#D4AF37]"></i> 086-3446509
+                    </a>
+                    <a href="tel:0863446519" class="bg-slate-800 hover:bg-[#D4AF37] hover:text-[#0B192C] border border-slate-700 px-3 py-2 rounded-xl transition-all font-bold flex items-center gap-2 text-white">
+                        <i class="fa-solid fa-phone text-[#D4AF37]"></i> 086-3446519
+                    </a>
+                    <a href="https://wa.me/201003394577" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl transition-all font-bold flex items-center gap-2 shadow-md">
+                        <i class="fa-brands fa-whatsapp text-lg"></i> واتساب الفرع
+                    </a>
+                    <a href="https://maps.google.com/?q=Samalut+Minya+Egypt" target="_blank" class="bg-[#D4AF37] hover:bg-[#FFD700] text-[#0B192C] px-3 py-2 rounded-xl transition-all font-black flex items-center gap-2 shadow-md">
+                        <i class="fa-solid fa-map-location-dot"></i> موقع GPS
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-[#1E3E62] py-2.5 px-4 text-xs text-slate-100">
+                <div class="max-w-7xl mx-auto flex flex-wrap justify-around items-center gap-2 text-center">
+                    <div><i class="fa-regular fa-clock text-[#FFD700] ml-1.5"></i><strong>أوقات العمل:</strong> يومياً من 8:00 ص حتى 9:00 م (الجمعة: من بعد الصلاة حتى 9:00 م)</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="max-w-7xl mx-auto px-4 mt-8">
+            <div class="flex border-b border-slate-300 overflow-x-auto gap-2">
+                <button onclick="switchTab('client')" id="btn-client" class="tab-btn active px-5 py-3 font-bold text-sm rounded-t-2xl transition-all shadow-md shrink-0">
+                    <i class="fa-solid fa-calendar-check ml-1 text-emerald-600"></i> حجز موعد للعميل
+                </button>
+                <button onclick="switchTab('rates')" id="btn-rates" class="tab-btn px-5 py-3 font-bold text-sm rounded-t-2xl transition-all shadow-md shrink-0">
+                    <i class="fa-solid fa-money-bill-wave ml-1 text-amber-500"></i> أسعار بنك مصر والحاسبة
+                </button>
+                <button onclick="switchTab('teller')" id="btn-teller" class="tab-btn px-5 py-3 font-bold text-sm rounded-t-2xl transition-all shadow-md shrink-0">
+                    <i class="fa-solid fa-user-lock ml-1 text-blue-600"></i> لوحة الصراف (مقفولة بكلمة سر)
+                </button>
+                <button onclick="switchTab('contacts')" id="btn-contacts" class="tab-btn px-5 py-3 font-bold text-sm rounded-t-2xl transition-all shadow-md shrink-0">
+                    <i class="fa-solid fa-address-book ml-1 text-purple-600"></i> سجل العملاء والأرقام (مقفولة)
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 mt-8 pb-16">
+
+            <!-- TAB 1: CLIENT BOOKING -->
+            <section id="tab-client" class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
+                    <h2 class="text-xl font-black text-[#0B192C] mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-days text-[#D4AF37]"></i> نموذج حجز موعد زيارة
+                    </h2>
+                    <p class="text-xs text-slate-500 mb-6">قم بملء البيانات لحجز موعد بالفرع، وسيتم إرسال الطلب مباشرة لواتساب الفرع (<strong class="text-emerald-600">01003394577</strong>).</p>
+
+                    <form onsubmit="handleClientAppointment(event)" class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">تاريخ الموعد</label>
-                            <input type="date" id="client-date" required class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none text-xs font-bold" />
+                            <label class="block text-xs font-bold text-slate-700 mb-1">اسم العميل بالكامل</label>
+                            <input type="text" id="client-name" required placeholder="مثال: أحمد سري" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none font-bold focus:ring-2 focus:ring-[#D4AF37]" />
                         </div>
+
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">وقت الموعد المتوقع</label>
-                            <input type="time" id="client-time" required value="11:00" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none text-xs font-bold" />
+                            <label class="block text-xs font-bold text-slate-700 mb-1">رقم الهاتف / الواتساب</label>
+                            <input type="tel" id="client-phone" required placeholder="01012345678" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-left text-slate-900 outline-none font-bold focus:ring-2 focus:ring-[#D4AF37]" dir="ltr" />
                         </div>
-                    </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">ملاحظات إضافية (اختياري)</label>
-                        <textarea id="client-notes" placeholder="أكتب أي ملاحظات ترغب في توضيحها للصراف..." class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none text-xs h-20"></textarea>
-                    </div>
-
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
-                        <i class="fa-brands fa-whatsapp text-2xl"></i> تأكيد وحجز الموعد عبر الواتساب
-                    </button>
-                </form>
-            </div>
-
-            <div class="flex flex-col justify-between">
-                <div id="booking-response-card" class="bg-white border border-slate-200 p-6 rounded-3xl text-center shadow-md">
-                    <i class="fa-solid fa-clock-rotate-left text-4xl text-amber-500 mb-3"></i>
-                    <h3 class="font-bold text-lg text-slate-800">حالة حجز الموعد</h3>
-                    <p class="text-xs text-slate-500 mt-2">عند الضغط على "تأكيد وحجز الموعد"، سينتقل بك التطبيق للواتساب للرقم <strong class="text-slate-800">01003394577</strong> وستصل بياناتك للصراف للموافق عليها وحفظ رقمك.</p>
-                </div>
-
-                <div class="mt-6 bg-[#0B192C] text-white p-6 rounded-3xl border border-slate-800 shadow-xl">
-                    <h4 class="text-sm font-black text-[#FFD700] mb-2"><i class="fa-solid fa-circle-info ml-1"></i> تنبيهات هامة</h4>
-                    <ul class="text-xs space-y-2 text-slate-300 list-disc list-inside">
-                        <li>حجز الموعد مجاني تماماً ويضمن لك عدم الانتظار في الطابور.</li>
-                        <li>يرجى الحضور في الوقت المحدد مع بطاقة الرقم القومي سارية.</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 2: RATES & CALCULATOR (مفتوح للجميع) -->
-        <section id="tab-rates" class="hidden grid lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
-                <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h2 class="text-xl font-black text-[#0B192C]">أسعار صرف العملات (بنك مصر)</h2>
-                        <p class="text-xs text-slate-500 mt-1">تحديث الأسعار الرسمية المعلنة</p>
-                    </div>
-                    <button onclick="fetchLiveRates()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-2 rounded-xl text-xs font-bold border border-slate-300 flex items-center gap-1.5">
-                        <i class="fa-solid fa-arrows-rotate text-emerald-600"></i> تحديث الأسعار الآن
-                    </button>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right">
-                        <thead>
-                            <tr class="border-b border-slate-200 text-xs text-slate-500 font-bold">
-                                <th class="pb-3">العملة</th>
-                                <th class="pb-3">الشراء (من العميل)</th>
-                                <th class="pb-3">البيع (للعميل)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="rates-table-body" class="divide-y divide-slate-100 text-sm">
-                            <!-- JS Generated -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Calculator -->
-            <div class="bg-[#0B192C] text-white p-6 rounded-3xl shadow-xl border border-slate-800 flex flex-col justify-between">
-                <div>
-                    <h3 class="text-lg font-black text-[#FFD700] mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-calculator"></i> الحاسبة المباشرة
-                    </h3>
-
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs text-slate-300 mb-1.5 font-bold">نوع العملية</label>
-                            <div class="grid grid-cols-2 gap-2 bg-slate-800 p-1 rounded-xl">
-                                <button type="button" id="btn-calc-buy" onclick="setCalcType('buy')" class="py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C]">شراء من العميل</button>
-                                <button type="button" id="btn-calc-sell" onclick="setCalcType('sell')" class="py-2 text-xs font-bold rounded-lg text-slate-300">بيع للعميل</button>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">تاريخ الموعد</label>
+                                <input type="date" id="client-date" required class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none text-xs font-bold focus:ring-2 focus:ring-[#D4AF37]" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">وقت الموعد المتوقع</label>
+                                <input type="time" id="client-time" required value="11:00" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none text-xs font-bold focus:ring-2 focus:ring-[#D4AF37]" />
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs text-slate-300 mb-1.5 font-bold">العملة</label>
-                            <select id="calc-currency" onchange="calculateTotal()" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white outline-none font-bold">
-                                <option value="USD">دولار أمريكي (USD)</option>
-                                <option value="EUR">يورو أوروبي (EUR)</option>
-                                <option value="SAR">ريال سعودي (SAR)</option>
-                                <option value="AED">درهم إماراتي (AED)</option>
-                                <option value="GBP">جنيه إسترليني (GBP)</option>
-                                <option value="KWD">دينار كويتي (KWD)</option>
-                                <option value="QAR">ريال قطري (QAR)</option>
-                            </select>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">ملاحظات إضافية (اختياري)</label>
+                            <textarea id="client-notes" placeholder="أكتب أي ملاحظات ترغب في توضيحها للصراف..." class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none text-xs h-20 focus:ring-2 focus:ring-[#D4AF37]"></textarea>
                         </div>
 
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-2xl"></i> تأكيد وحجز الموعد عبر الواتساب
+                        </button>
+                    </form>
+                </div>
+
+                <div class="flex flex-col justify-between">
+                    <div id="booking-response-card" class="bg-white border border-slate-200 p-6 rounded-3xl text-center shadow-md">
+                        <i class="fa-solid fa-clock-rotate-left text-4xl text-amber-500 mb-3"></i>
+                        <h3 class="font-bold text-lg text-slate-800">حالة حجز الموعد</h3>
+                        <p class="text-xs text-slate-500 mt-2">عند الضغط على "تأكيد وحجز الموعد"، سينتقل بك التطبيق للواتساب للرقم <strong class="text-slate-800">01003394577</strong> وستصل بياناتك للصراف للموافق عليها وحفظ رقمك.</p>
+                    </div>
+
+                    <div class="mt-6 bg-[#0B192C] text-white p-6 rounded-3xl border border-slate-800 shadow-xl">
+                        <h4 class="text-sm font-black text-[#FFD700] mb-2"><i class="fa-solid fa-circle-info ml-1"></i> تنبيهات هامة</h4>
+                        <ul class="text-xs space-y-2 text-slate-300 list-disc list-inside">
+                            <li>حجز الموعد مجاني تماماً ويضمن لك عدم الانتظار في الطابور.</li>
+                            <li>يرجى الحضور في الوقت المحدد مع بطاقة الرقم القومي سارية.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: RATES & CALCULATOR -->
+            <section id="tab-rates" class="hidden grid lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
+                    <div class="flex justify-between items-center mb-6">
                         <div>
-                            <label class="block text-xs text-slate-300 mb-1.5 font-bold">المبلغ بالعملة الأجنبية</label>
-                            <input type="number" id="calc-amount" value="100" oninput="calculateTotal()" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white font-bold outline-none text-left text-lg" dir="ltr" />
+                            <h2 class="text-xl font-black text-[#0B192C]">أسعار صرف العملات (بنك مصر)</h2>
+                            <p class="text-xs text-slate-500 mt-1">تحديث الأسعار الرسمية المعلنة</p>
                         </div>
+                        <button onclick="fetchLiveRates()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-2 rounded-xl text-xs font-bold border border-slate-300 flex items-center gap-1.5 transition-all">
+                            <i class="fa-solid fa-arrows-rotate text-emerald-600"></i> تحديث الأسعار الآن
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-right">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-xs text-slate-500 font-bold">
+                                    <th class="pb-3">العملة</th>
+                                    <th class="pb-3">الشراء (من العميل)</th>
+                                    <th class="pb-3">البيع (للعميل)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rates-table-body" class="divide-y divide-slate-100 text-sm">
+                                <!-- JS Generated -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
-                <div class="mt-6 pt-6 border-t border-slate-800">
-                    <p class="text-xs text-slate-400 mb-1">المبلغ القابل للتدفق بالجنيه المصري</p>
-                    <div id="calc-total" class="text-3xl font-black text-[#FFD700]">0.00 <span class="text-sm font-normal text-slate-300">ج.م</span></div>
+                <!-- Calculator -->
+                <div class="bg-[#0B192C] text-white p-6 rounded-3xl shadow-xl border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-black text-[#FFD700] mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-calculator"></i> الحاسبة المباشرة
+                        </h3>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs text-slate-300 mb-1.5 font-bold">نوع العملية</label>
+                                <div class="grid grid-cols-2 gap-2 bg-slate-800 p-1 rounded-xl">
+                                    <button type="button" id="btn-calc-buy" onclick="setCalcType('buy')" class="py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C] transition-all">شراء من العميل</button>
+                                    <button type="button" id="btn-calc-sell" onclick="setCalcType('sell')" class="py-2 text-xs font-bold rounded-lg text-slate-300 transition-all">بيع للعميل</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs text-slate-300 mb-1.5 font-bold">العملة</label>
+                                <select id="calc-currency" onchange="calculateTotal()" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white outline-none font-bold">
+                                    <option value="USD">دولار أمريكي (USD)</option>
+                                    <option value="EUR">يورو أوروبي (EUR)</option>
+                                    <option value="SAR">ريال سعودي (SAR)</option>
+                                    <option value="AED">درهم إماراتي (AED)</option>
+                                    <option value="GBP">جنيه إسترليني (GBP)</option>
+                                    <option value="KWD">دينار كويتي (KWD)</option>
+                                    <option value="QAR">ريال قطري (QAR)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs text-slate-300 mb-1.5 font-bold">المبلغ بالعملة الأجنبية</label>
+                                <input type="number" id="calc-amount" value="100" oninput="calculateTotal()" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white font-bold outline-none text-left text-lg" dir="ltr" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-slate-800">
+                        <p class="text-xs text-slate-400 mb-1">المبلغ القابل للتدفق بالجنيه المصري</p>
+                        <div id="calc-total" class="text-3xl font-black text-[#FFD700]">0.00 <span class="text-sm font-normal text-slate-300">ج.م</span></div>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- PASSWORD LOGIN MODAL / SCREEN (للموظفين فقط) -->
-        <div id="auth-modal" class="hidden bg-white p-8 rounded-3xl border border-slate-200 shadow-xl max-w-md mx-auto text-center my-12">
-            <div class="w-16 h-16 bg-slate-100 text-[#0B192C] rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
-                <i class="fa-solid fa-lock text-[#D4AF37]"></i>
-            </div>
-            <h3 class="text-xl font-black text-[#0B192C] mb-1">لوحة الصرافين المعتمدة</h3>
-            <p class="text-xs text-slate-500 mb-6">هذه المنطقة مخصصة لموظفي الفرع فقط. أدخل كلمة السر للدخول.</p>
-
-            <form onsubmit="handleAuthLogin(event)" class="space-y-4">
-                <input type="password" id="admin-pass-input" placeholder="كلمة السر (الافتراضية: admin2026)" required class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-center text-slate-900 font-black outline-none tracking-widest text-lg" />
-                <button type="submit" class="w-full bg-[#0B192C] hover:bg-[#1E3E62] text-[#FFD700] font-black py-3 rounded-xl shadow-lg transition-all">
-                    دخول اللوحة
-                </button>
-            </form>
-            <p id="auth-error" class="text-xs text-rose-600 font-bold mt-3 hidden">كلمة المرور غير صحيحة!</p>
-        </div>
-
-        <!-- TAB 3: TELLER CONTROL (محمية بكلمة سر) -->
-        <section id="tab-teller" class="hidden bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
-            <div class="flex flex-wrap justify-between items-center mb-6 gap-2">
-                <div>
-                    <h2 class="text-xl font-black text-[#0B192C]">لوحة الصراف - قبول ورفض طلبات المواعيد</h2>
-                    <p class="text-xs text-slate-500 mt-1">إدارة الطلبات القادمة من العملاء عبر الموقع</p>
+            <!-- PASSWORD LOGIN MODAL -->
+            <div id="auth-modal" class="hidden bg-white p-8 rounded-3xl border border-slate-200 shadow-xl max-w-md mx-auto text-center my-12">
+                <div class="w-16 h-16 bg-slate-100 text-[#0B192C] rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+                    <i class="fa-solid fa-lock text-[#D4AF37]"></i>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="renderTellerRequests()" class="bg-[#0B192C] text-[#FFD700] px-4 py-2 rounded-xl text-xs font-bold">
-                        <i class="fa-solid fa-rotate"></i> تحديث
+                <h3 class="text-xl font-black text-[#0B192C] mb-1">لوحة الصرافين المعتمدة</h3>
+                <p class="text-xs text-slate-500 mb-6">هذه المنطقة مخصصة لموظفي الفرع فقط. أدخل كلمة السر للدخول.</p>
+
+                <form onsubmit="handleAuthLogin(event)" class="space-y-4">
+                    <input type="password" id="admin-pass-input" placeholder="كلمة السر (admin2026)" required class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-center text-slate-900 font-black outline-none tracking-widest text-lg focus:ring-2 focus:ring-[#D4AF37]" />
+                    <button type="submit" class="w-full bg-[#0B192C] hover:bg-[#1E3E62] text-[#FFD700] font-black py-3 rounded-xl shadow-lg transition-all">
+                        دخول اللوحة
                     </button>
-                    <button onclick="logoutTeller()" class="bg-rose-100 text-rose-700 px-3 py-2 rounded-xl text-xs font-bold border border-rose-200">
-                        <i class="fa-solid fa-right-from-bracket ml-1"></i> قفل اللوحة
-                    </button>
-                </div>
+                </form>
+                <p id="auth-error" class="text-xs text-rose-600 font-bold mt-3 hidden">كلمة المرور غير صحيحة!</p>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-right text-sm">
-                    <thead>
-                        <tr class="border-b border-slate-200 text-xs text-slate-500 font-bold">
-                            <th class="pb-3">كود الموعد</th>
-                            <th class="pb-3">اسم العميل</th>
-                            <th class="pb-3">الهاتف</th>
-                            <th class="pb-3">التاريخ والوقت</th>
-                            <th class="pb-3">الملاحظات</th>
-                            <th class="pb-3">الحالة</th>
-                            <th class="pb-3">القرار (واتساب العميل)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="teller-requests-body" class="divide-y divide-slate-100">
-                        <!-- JS Generated -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- TAB 4: CONTACTS DATABASE (محمية بكلمة سر) -->
-        <section id="tab-contacts" class="hidden bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
-            <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
-                <div>
-                    <h2 class="text-xl font-black text-[#0B192C]">سجل أسماء وأرقام العملاء المحفوظة</h2>
-                    <p class="text-xs text-slate-500 mt-1">قاعدة بيانات جميع العملاء الذين قاموا بالطلب أو الحجز</p>
+            <!-- TAB 3: TELLER CONTROL -->
+            <section id="tab-teller" class="hidden bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-2">
+                    <div>
+                        <h2 class="text-xl font-black text-[#0B192C]">لوحة الصراف - قبول ورفض طلبات المواعيد</h2>
+                        <p class="text-xs text-slate-500 mt-1">إدارة الطلبات القادمة من العملاء عبر الموقع</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="renderTellerRequests()" class="bg-[#0B192C] text-[#FFD700] px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#1E3E62] transition-all">
+                            <i class="fa-solid fa-rotate"></i> تحديث
+                        </button>
+                        <button onclick="logoutTeller()" class="bg-rose-100 text-rose-700 px-3 py-2 rounded-xl text-xs font-bold border border-rose-200 hover:bg-rose-200 transition-all">
+                            <i class="fa-solid fa-right-from-bracket ml-1"></i> قفل اللوحة
+                        </button>
+                    </div>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <input type="text" id="contacts-search" oninput="renderContacts()" placeholder="بحث باسم العميل أو الرقم..." class="bg-slate-50 border border-slate-300 px-3 py-2 rounded-xl text-xs outline-none w-60" />
-                    <button onclick="exportContactsCSV()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold">
-                        <i class="fa-solid fa-file-excel ml-1"></i> تصدير البيانات
-                    </button>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-xs text-slate-500 font-bold">
+                                <th class="pb-3">كود الموعد</th>
+                                <th class="pb-3">اسم العميل</th>
+                                <th class="pb-3">الهاتف</th>
+                                <th class="pb-3">التاريخ والوقت</th>
+                                <th class="pb-3">الملاحظات</th>
+                                <th class="pb-3">الحالة</th>
+                                <th class="pb-3">القرار (واتساب العميل)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teller-requests-body" class="divide-y divide-slate-100">
+                            <!-- JS Generated -->
+                        </tbody>
+                    </table>
                 </div>
-            </div>
+            </section>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-right text-sm">
-                    <thead>
-                        <tr class="border-b border-slate-200 text-xs text-slate-500 font-bold">
-                            <th class="pb-3">اسم العميل</th>
-                            <th class="pb-3">رقم الهاتف / الواتساب</th>
-                            <th class="pb-3">عدد الحجوزات</th>
-                            <th class="pb-3">تاريخ تسجيل العميل</th>
-                            <th class="pb-3">تواصل</th>
-                        </tr>
-                    </thead>
-                    <tbody id="contacts-table-body" class="divide-y divide-slate-100">
-                        <!-- JS Generated -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
+            <!-- TAB 4: CONTACTS DATABASE -->
+            <section id="tab-contacts" class="hidden bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl font-black text-[#0B192C]">سجل أسماء وأرقام العملاء المحفوظة</h2>
+                        <p class="text-xs text-slate-500 mt-1">قاعدة بيانات جميع العملاء الذين قاموا بالطلب أو الحجز</p>
+                    </div>
 
-    </main>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="contacts-search" oninput="renderContacts()" placeholder="بحث باسم العميل أو الرقم..." class="bg-slate-50 border border-slate-300 px-3 py-2 rounded-xl text-xs outline-none w-60 focus:ring-2 focus:ring-[#D4AF37]" />
+                        <button onclick="exportContactsCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl text-xs font-bold transition-all">
+                            <i class="fa-solid fa-file-excel ml-1"></i> تصدير البيانات
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-xs text-slate-500 font-bold">
+                                <th class="pb-3">اسم العميل</th>
+                                <th class="pb-3">رقم الهاتف / الواتساب</th>
+                                <th class="pb-3">عدد الحجوزات</th>
+                                <th class="pb-3">تاريخ تسجيل العميل</th>
+                                <th class="pb-3">تواصل</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contacts-table-body" class="divide-y divide-slate-100">
+                            <!-- JS Generated -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-[#0B192C] text-slate-400 text-xs text-center py-4 border-t border-slate-800">
+        <p>جميع الحقوق محفوظة © 2026 شركة الصرافة المصرية - فرع سمالوط</p>
+    </footer>
 
     <!-- JavaScript Logic -->
     <script>
         const BRANCH_WHATSAPP = '201003394577';
-        const ADMIN_PIN = 'admin2026'; // كلمة المرور الخاصة بالصرافين
+        const ADMIN_PIN = 'admin2026';
         let isAuthenticated = false;
         let pendingTabTarget = null;
 
@@ -386,7 +398,7 @@
             tbody.innerHTML = '';
             currenciesData.forEach(c => {
                 const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50';
+                tr.className = 'hover:bg-slate-50 transition-all';
                 tr.innerHTML = `
                     <td class="py-4 font-bold">${c.name} (${c.code})</td>
                     <td class="py-4 font-bold text-emerald-600">${c.buy.toFixed(2)} ج.م</td>
@@ -402,11 +414,11 @@
             const btnBuy = document.getElementById('btn-calc-buy');
             const btnSell = document.getElementById('btn-calc-sell');
             if (type === 'buy') {
-                btnBuy.className = 'py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C]';
-                btnSell.className = 'py-2 text-xs font-bold rounded-lg text-slate-300';
+                btnBuy.className = 'py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C] transition-all';
+                btnSell.className = 'py-2 text-xs font-bold rounded-lg text-slate-300 transition-all';
             } else {
-                btnSell.className = 'py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C]';
-                btnBuy.className = 'py-2 text-xs font-bold rounded-lg text-slate-300';
+                btnSell.className = 'py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C] transition-all';
+                btnBuy.className = 'py-2 text-xs font-bold rounded-lg text-slate-300 transition-all';
             }
             calculateTotal();
         }
@@ -496,7 +508,7 @@
 
             appointments.forEach(a => {
                 const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50';
+                tr.className = 'hover:bg-slate-50 transition-all';
 
                 let statusBadge = '<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">قيد الانتظار</span>';
                 if (a.status === 'مقبول') statusBadge = '<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">مقبول</span>';
@@ -517,8 +529,8 @@
                     <td class="py-4">${statusBadge}</td>
                     <td class="py-4">
                         <div class="flex gap-1">
-                            <a href="https://wa.me/${cleanPhone}?text=${encodeURIComponent(acceptMsg)}" target="_blank" onclick="updateAppointmentStatus('${a.id}', 'مقبول')" class="bg-emerald-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold hover:bg-emerald-700">موافقة</a>
-                            <a href="https://wa.me/${cleanPhone}?text=${encodeURIComponent(rejectMsg)}" target="_blank" onclick="updateAppointmentStatus('${a.id}', 'مرفوض')" class="bg-rose-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold hover:bg-rose-700">رفض</a>
+                            <a href="https://wa.me/${cleanPhone}?text=${encodeURIComponent(acceptMsg)}" target="_blank" onclick="updateAppointmentStatus('${a.id}', 'مقبول')" class="bg-emerald-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold hover:bg-emerald-700 transition-all">موافقة</a>
+                            <a href="https://wa.me/${cleanPhone}?text=${encodeURIComponent(rejectMsg)}" target="_blank" onclick="updateAppointmentStatus('${a.id}', 'مرفوض')" class="bg-rose-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold hover:bg-rose-700 transition-all">رفض</a>
                         </div>
                     </td>
                 `;
@@ -552,14 +564,14 @@
                 if (cleanPhone.startsWith('0')) cleanPhone = '20' + cleanPhone.substring(1);
 
                 const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50';
+                tr.className = 'hover:bg-slate-50 transition-all';
                 tr.innerHTML = `
                     <td class="py-4 font-bold text-slate-900">${c.name}</td>
                     <td class="py-4 font-bold text-slate-700" dir="ltr">${c.phone}</td>
                     <td class="py-4"><span class="bg-slate-100 text-slate-800 font-bold px-2 py-1 rounded-md text-xs">${c.count} موعد</span></td>
                     <td class="py-4 text-xs text-slate-500">${c.created || 'مسبقاً'}</td>
                     <td class="py-4">
-                        <a href="https://wa.me/${cleanPhone}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold inline-flex items-center gap-1">
+                        <a href="https://wa.me/${cleanPhone}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold inline-flex items-center gap-1 transition-all">
                             <i class="fa-brands fa-whatsapp"></i> مراسلة
                         </a>
                     </td>
