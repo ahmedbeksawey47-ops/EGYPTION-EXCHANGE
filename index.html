@@ -1,623 +1,332 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>شركة الصرافة المصرية - فرع سمالوط</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts Cairo -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
-        .main-tab.active { background-color: #0B192C; color: #FFD700; border-bottom: 3px solid #D4AF37; }
-        .main-tab { background-color: #ffffff; color: #475569; }
-        .badge-pending { background-color: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
-        .badge-approved { background-color: #d1fae5; color: #059669; border: 1px solid #6ee7b7; }
-        .badge-rejected { background-color: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
-        .badge-completed { background-color: #e0e7ff; color: #4338ca; border: 1px solid #a5b4fc; }
+        .tab-btn.active { background-color: #0B192C; color: #FFD700; border-bottom: 3px solid #D4AF37; }
+        .tab-btn { background-color: #ffffff; color: #475569; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-900 min-h-screen">
 
-    <div>
-        <!-- Header -->
-        <header class="bg-[#0B192C] text-white shadow-xl border-b-4 border-[#D4AF37]">
-            <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-gradient-to-tr from-[#D4AF37] to-[#FFD700] rounded-2xl flex items-center justify-center text-[#0B192C] font-black text-2xl shadow-lg">
-                        <i class="fa-solid fa-building-columns"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-xl md:text-2xl font-black text-[#FFD700] tracking-wide">شركة الصرافة المصرية</h1>
-                        <p class="text-xs text-slate-300 flex items-center gap-1.5 mt-0.5 font-semibold">
-                            <i class="fa-solid fa-location-dot text-[#D4AF37]"></i> فرع سمالوط - الشارع الجديد بجوار البنك الأهلي
-                        </p>
-                    </div>
+    <!-- Header -->
+    <header class="bg-[#0B192C] text-white shadow-xl border-b-4 border-[#D4AF37]">
+        <div class="max-w-7xl mx-auto px-4 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-gradient-to-tr from-[#D4AF37] to-[#FFD700] rounded-2xl flex items-center justify-center text-[#0B192C] font-black text-2xl shadow-lg">
+                    <i class="fa-solid fa-building-columns"></i>
                 </div>
-
-                <div class="flex items-center gap-3">
-                    <div class="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-xl text-xs flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span class="text-slate-200 font-bold">النظام مباشر والتحديث آلي</span>
-                    </div>
+                <div>
+                    <h1 class="text-2xl font-black text-[#FFD700]">شركة الصرافة المصرية</h1>
+                    <p class="text-xs text-slate-300 flex items-center gap-1.5 mt-0.5">
+                        <i class="fa-solid fa-location-dot text-[#D4AF37]"></i> فرع سمالوط - الشارع الجديد بجوار البنك الأهلي
+                    </p>
                 </div>
             </div>
 
-            <!-- Top Switch Bar between Client & Teller -->
-            <div class="bg-[#1E3E62] py-2 px-4 text-xs border-t border-slate-800">
-                <div class="max-w-7xl mx-auto flex justify-between items-center">
-                    <span class="text-slate-300"><i class="fa-regular fa-clock text-[#FFD700] ml-1"></i> أوقات العمل: 8:30 ص - 9:00 م</span>
-                    <div class="flex gap-2">
-                        <button onclick="switchRole('client')" id="role-btn-client" class="px-3 py-1 rounded-lg text-xs font-bold transition-all bg-[#D4AF37] text-[#0B192C]">
-                            <i class="fa-solid fa-user ml-1"></i> بوابه العميل
-                        </button>
-                        <button onclick="switchRole('teller')" id="role-btn-teller" class="px-3 py-1 rounded-lg text-xs font-bold transition-all bg-slate-700 text-slate-200 hover:text-white">
-                            <i class="fa-solid fa-user-shield ml-1"></i> لوحة الصراف / الموظف
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Navigation Tabs -->
-        <div class="max-w-7xl mx-auto px-4 mt-6">
-            <div class="flex border-b border-slate-300 overflow-x-auto gap-2">
-                <!-- Client Navigation -->
-                <button onclick="switchTab('client-booking')" id="btn-client-booking" class="main-tab active px-5 py-3 font-bold text-sm rounded-t-2xl transition-all flex items-center whitespace-nowrap">
-                    <i class="fa-solid fa-calendar-check ml-2 text-[#D4AF37]"></i> حجز موعد / طلب صرف
-                </button>
-                <button onclick="switchTab('client-status')" id="btn-client-status" class="main-tab px-5 py-3 font-bold text-sm rounded-t-2xl transition-all flex items-center whitespace-nowrap">
-                    <i class="fa-solid fa-[#D4AF37] fa-list-check ml-2 text-emerald-500"></i> متابعة طلباتي
-                </button>
-                <button onclick="switchTab('rates')" id="btn-rates" class="main-tab px-5 py-3 font-bold text-sm rounded-t-2xl transition-all flex items-center whitespace-nowrap">
-                    <i class="fa-solid fa-calculator ml-2 text-blue-500"></i> أسعار اليوم والحاسبة
-                </button>
-
-                <!-- Teller Dashboard Tab (Hidden initially for Client view) -->
-                <button onclick="switchTab('teller-dashboard')" id="btn-teller-dashboard" class="main-tab hidden px-5 py-3 font-bold text-sm rounded-t-2xl transition-all flex items-center whitespace-nowrap bg-amber-50">
-                    <i class="fa-solid fa-cash-register ml-2 text-amber-600"></i> إدارة طلبات العملاء (الصراف)
-                    <span id="pending-count-badge" class="mr-2 bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full font-black">0</span>
-                </button>
+            <div class="flex flex-wrap items-center gap-2 text-xs">
+                <a href="tel:0863446509" class="bg-slate-800 hover:bg-[#D4AF37] hover:text-[#0B192C] border border-slate-700 px-3 py-2 rounded-xl transition-all font-bold flex items-center gap-2 text-white">
+                    <i class="fa-solid fa-phone text-[#D4AF37]"></i> 086-3446509
+                </a>
+                <a href="tel:0863446519" class="bg-slate-800 hover:bg-[#D4AF37] hover:text-[#0B192C] border border-slate-700 px-3 py-2 rounded-xl transition-all font-bold flex items-center gap-2 text-white">
+                    <i class="fa-solid fa-phone text-[#D4AF37]"></i> 086-3446519
+                </a>
+                <a href="https://wa.me/201003394577" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl transition-all font-bold flex items-center gap-2 shadow-md">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> واتساب الفرع
+                </a>
+                <a href="https://maps.google.com/?q=Samalut+Minya+Egypt" target="_blank" class="bg-[#D4AF37] hover:bg-[#FFD700] text-[#0B192C] px-3 py-2 rounded-xl transition-all font-black flex items-center gap-2 shadow-md">
+                    <i class="fa-solid fa-map-location-dot"></i> موقع GPS
+                </a>
             </div>
         </div>
 
-        <!-- Main Content Container -->
-        <main class="max-w-7xl mx-auto px-4 mt-6 pb-12">
+        <div class="bg-[#1E3E62] py-2.5 px-4 text-xs text-slate-100">
+            <div class="max-w-7xl mx-auto flex flex-wrap justify-around items-center gap-2 text-center">
+                <div><i class="fa-regular fa-clock text-[#FFD700] ml-1.5"></i><strong>أوقات العمل:</strong> يومياً من 8:00 ص حتى 9:00 م (الجمعة: من بعد الصلاة حتى 9:00 م)</div>
+            </div>
+        </div>
+    </header>
 
-            <!-- 1. CLIENT BOOKING PORTAL -->
-            <section id="tab-client-booking" class="grid lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
-                    <div class="border-b border-slate-100 pb-4 mb-6">
-                        <h2 class="text-xl font-black text-[#0B192C] flex items-center gap-2">
-                            <i class="fa-solid fa-paper-plane text-[#D4AF37]"></i> تقديم طلب حجز موعد أو تجهيز عملة
-                        </h2>
-                        <p class="text-xs text-slate-500 mt-1 font-semibold">سيتم إرسال الطلب لموظف الصرافة للمراجعة والموافقة الفورية</p>
+    <!-- Navigation Tabs -->
+    <div class="max-w-7xl mx-auto px-4 mt-8">
+        <div class="flex border-b border-slate-300 overflow-x-auto gap-2">
+            <button onclick="switchTab('booking')" id="btn-booking" class="tab-btn active px-5 py-3 font-bold text-sm rounded-t-2xl transition-all shadow-md">
+                <i class="fa-brands fa-whatsapp ml-1 text-emerald-500"></i> طلب حجز / صرف مسبق
+            </button>
+            <button onclick="switchTab('rates')" id="btn-rates" class="tab-btn px-5 py-3 font-bold text-sm rounded-t-2xl transition-all shadow-md">
+                <i class="fa-solid fa-calculator ml-1"></i> أسعار العملات والحاسبة
+            </button>
+            <button onclick="switchTab('teller')" id="btn-teller" class="tab-btn px-5 py-3 font-bold text-sm rounded-t-2xl transition-all shadow-md">
+                <i class="fa-solid fa-user-tie ml-1 text-blue-600"></i> لوحة تحكم الصراف
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 mt-8 pb-16">
+
+        <!-- TAB 1: CLIENT BOOKING -->
+        <section id="tab-booking" class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
+                <h2 class="text-xl font-black text-[#0B192C] mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-check text-[#D4AF37]"></i> حجز موعد / طلب صرف مسبق
+                </h2>
+                <p class="text-xs text-slate-500 mb-6">سيتم إرسال الطلب مباشرة إلى واتساب إدارة الفرع (<strong class="text-emerald-600">01003394577</strong>) لتأكيد حجزك أو مراجعته من قبل الصراف.</p>
+
+                <form onsubmit="handleClientBooking(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">اسم العميل</label>
+                        <input type="text" id="client-name" required placeholder="مثال: أحمد سري" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none" />
                     </div>
 
-                    <form onsubmit="submitClientRequest(event)" class="space-y-4">
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1.5">الاسم بالكامل <span class="text-red-500">*</span></label>
-                                <input type="text" id="req-name" required placeholder="مثال: أحمد محمد محمود" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none focus:border-[#0B192C]" />
-                            </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">رقم هاتف العميل (للتواصل)</label>
+                        <input type="tel" id="client-phone" required placeholder="01012345678" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-left text-slate-900 outline-none" dir="ltr" />
+                    </div>
 
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1.5">رقم الواتساب <span class="text-red-500">*</span></label>
-                                <input type="tel" id="req-phone" required placeholder="01012345678" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-left text-slate-900 outline-none focus:border-[#0B192C]" dir="ltr" />
-                            </div>
-                        </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">نوع الطلب</label>
+                        <select id="request-type" onchange="toggleCurrencyFields()" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none font-bold">
+                            <option value="صرف عملة أجنبية (شراء من العميل)">صرف عملة أجنبية (أنا أبيع للصرافة)</option>
+                            <option value="شراء عملة أجنبية (بيع للعميل)">شراء عملة أجنبية (أنا أشتري من الصرافة)</option>
+                            <option value="حجز موعد استشارة/صرف">حجز موعد فقط</option>
+                        </select>
+                    </div>
 
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1.5">نوع الطلب <span class="text-red-500">*</span></label>
-                                <select id="req-type" onchange="toggleExchangeFields()" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 font-bold outline-none">
-                                    <option value="appointment">حجز موعد مسبق في الفرع</option>
-                                    <option value="exchange_buy">صرف مسبق (نشتري منك عملة أجنبية)</option>
-                                    <option value="exchange_sell">شراء مسبق (نبيع لك عملة أجنبية)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1.5">الموعد والتاريخ المطلوب <span class="text-red-500">*</span></label>
-                                <input type="datetime-local" id="req-datetime" required class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 font-bold outline-none" />
-                            </div>
-                        </div>
-
-                        <!-- Optional Exchange Details -->
-                        <div id="exchange-details-box" class="hidden bg-slate-50 p-4 rounded-2xl border border-slate-200 grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">العملة المطلوبة</label>
-                                <select id="req-currency" class="w-full bg-white border border-slate-300 p-2.5 rounded-xl font-bold text-sm">
-                                    <option value="USD">دولار أمريكي (USD)</option>
-                                    <option value="SAR">ريال سعودي (SAR)</option>
-                                    <option value="EUR">يورو أوروبي (EUR)</option>
-                                    <option value="AED">درهم إماراتي (AED)</option>
-                                    <option value="KWD">دينار كويتي (KWD)</option>
-                                    <option value="GBP">جنيه إسترليني (GBP)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">المبلغ المطلوب</label>
-                                <input type="number" id="req-amount" placeholder="مثال: 1000" class="w-full bg-white border border-slate-300 p-2.5 rounded-xl font-bold text-sm" />
-                            </div>
-                        </div>
-
+                    <div id="currency-amount-group" class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1.5">ملاحظات إضافية للصراف (إختياري)</label>
-                            <textarea id="req-notes" rows="2" placeholder="أكتب أي ملاحظات أو استفسار خاص بمعاملتك..." class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none"></textarea>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">العملة</label>
+                            <select id="request-currency" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none font-bold">
+                                <option value="USD">دولار أمريكي (USD)</option>
+                                <option value="EUR">يورو أوروبي (EUR)</option>
+                                <option value="SAR">ريال سعودي (SAR)</option>
+                                <option value="AED">درهم إماراتي (AED)</option>
+                                <option value="GBP">جنيه إسترليني (GBP)</option>
+                                <option value="KWD">دينار كويتي (KWD)</option>
+                            </select>
                         </div>
-
-                        <button type="submit" class="w-full bg-[#0B192C] hover:bg-[#1E3E62] text-[#FFD700] font-black py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-sm">
-                            <i class="fa-solid fa-paper-plane text-base"></i> إرسال الطلب للصراف لمراجعته
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Guidance Box -->
-                <div class="bg-[#0B192C] text-white p-6 rounded-3xl border border-slate-800 flex flex-col justify-between shadow-xl">
-                    <div>
-                        <h3 class="text-lg font-black text-[#FFD700] mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-circle-info"></i> كيف تعمل الخدمة؟
-                        </h3>
-
-                        <ol class="space-y-4 text-xs text-slate-300 list-decimal list-inside leading-relaxed font-semibold">
-                            <li>قم بملء النموذج بالبيانات الصحيحة وتحديد نوع الطلب.</li>
-                            <li>يصل طلبك فوراً لموظف الصرافة بقائمة **"قيد الانتظار"**.</li>
-                            <li>يقوم الصراف بمراجعة السيولة والمواعيد ثم **يرد بالقبول أو الرفض**.</li>
-                            <li>تستطيع متابعة حالة طلبك مباشرة من تبويب **"متابعة طلباتي"** أو استلام الرسالة عبر الواتساب.</li>
-                        </ol>
-                    </div>
-
-                    <div class="mt-8 p-4 bg-slate-800/80 rounded-2xl border border-slate-700 text-center">
-                        <p class="text-xs text-slate-400 mb-1">تواصل مباشر مع فرع سمالوط</p>
-                        <p class="text-lg font-black text-[#FFD700]" dir="ltr">086-3446509</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 2. CLIENT STATUS CHECK PORTAL -->
-            <section id="tab-client-status" class="hidden bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
-                <div class="flex flex-wrap justify-between items-center gap-4 mb-6 border-b border-slate-100 pb-4">
-                    <div>
-                        <h2 class="text-xl font-black text-[#0B192C]">متابعة حالة طلبات الحجز والتصريف</h2>
-                        <p class="text-xs text-slate-500 mt-0.5">ادخل رقم هاتفك لمتابعة موافقة الصراف على طلباتك</p>
-                    </div>
-
-                    <div class="flex gap-2 w-full sm:w-auto">
-                        <input type="tel" id="status-search-phone" placeholder="أدخل رقم الواتساب" class="bg-slate-50 border border-slate-300 px-3 py-2 rounded-xl text-xs font-bold outline-none" dir="ltr" />
-                        <button onclick="filterClientRequests()" class="bg-[#0B192C] text-[#FFD700] px-4 py-2 rounded-xl text-xs font-bold">بحث</button>
-                    </div>
-                </div>
-
-                <div id="client-requests-list" class="space-y-4">
-                    <!-- Dynamic rendering of Client Requests -->
-                </div>
-            </section>
-
-            <!-- 3. RATES & CALCULATOR -->
-            <section id="tab-rates" class="hidden grid lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
-                    <h2 class="text-xl font-black text-[#0B192C] mb-4">أسعار الصرف الرسمية المعلنة اليوم (بنك مصر)</h2>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-right border-collapse">
-                            <thead>
-                                <tr class="bg-slate-100 text-slate-700 text-xs font-black">
-                                    <th class="p-3.5 rounded-r-xl">العملة</th>
-                                    <th class="p-3.5 text-center">شراء (نشتري منك)</th>
-                                    <th class="p-3.5 text-center rounded-l-xl">بيع (نبيع لك)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="rates-table-body" class="divide-y divide-slate-100 text-sm font-bold">
-                                <!-- Populated dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="bg-[#0B192C] text-white p-6 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-lg font-black text-[#FFD700] mb-4"><i class="fa-solid fa-calculator ml-1"></i> الحاسبة المباشرة</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs text-slate-300 mb-1">نوع العملية</label>
-                                <div class="grid grid-cols-2 gap-2 bg-slate-800 p-1 rounded-xl">
-                                    <button type="button" id="calc-buy-btn" onclick="setCalcMode('buy')" class="py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C]">شراء</button>
-                                    <button type="button" id="calc-sell-btn" onclick="setCalcMode('sell')" class="py-2 text-xs font-bold rounded-lg text-slate-300">بيع</button>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-300 mb-1">اختر العملة</label>
-                                <select id="calc-currency-select" onchange="calculateExchange()" class="w-full bg-slate-800 border border-slate-700 p-2.5 rounded-xl text-white font-bold text-sm">
-                                    <option value="USD">USD - دولار أمريكي</option>
-                                    <option value="EUR">EUR - يورو أوروبي</option>
-                                    <option value="SAR">SAR - ريال سعودي</option>
-                                    <option value="AED">AED - درهم إماراتي</option>
-                                    <option value="GBP">GBP - جنيه إسترليني</option>
-                                    <option value="KWD">KWD - دينار كويتي</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs text-slate-300 mb-1">المبلغ بالعملة الأجنبية</label>
-                                <input type="number" id="calc-amount-input" value="100" oninput="calculateExchange()" class="w-full bg-slate-800 border border-slate-700 p-2.5 rounded-xl text-white font-bold text-left" dir="ltr" />
-                            </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">المبلغ المطلوب</label>
+                            <input type="number" id="request-amount" value="500" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none font-bold" />
                         </div>
                     </div>
-                    <div class="mt-6 pt-6 border-t border-slate-800">
-                        <p class="text-xs text-slate-400">المبلغ الإجمالي بالجنيه المصري</p>
-                        <div id="calc-result" class="text-3xl font-black text-[#FFD700]">0.00 <span class="text-sm font-normal text-slate-300">ج.م</span></div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">التاريخ المحدد</label>
+                            <input type="date" id="request-date" required class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none text-xs font-bold" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">الوقت المتوقع للحضور</label>
+                            <input type="time" id="request-time" required value="11:00" class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-slate-900 outline-none text-xs font-bold" />
+                        </div>
                     </div>
+
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-2xl"></i> إرسال الطلب لواتساب الفرع (01003394577)
+                    </button>
+                </form>
+            </div>
+
+            <div class="flex flex-col justify-between">
+                <div id="booking-status-box" class="bg-white border border-slate-200 p-6 rounded-3xl text-center shadow-md">
+                    <i class="fa-solid fa-paper-plane text-4xl text-emerald-500 mb-3"></i>
+                    <h3 class="font-bold text-lg text-slate-800">إرسال الطلب لموظف الصرافة</h3>
+                    <p class="text-xs text-slate-500 mt-2">عند الضغط على الزر الأخضر، سيتم فتح تطبيق الواتساب وإرسال تفاصيل طلبك مباشرة إلى الرقم: <strong class="text-slate-800">01003394577</strong> ليقوم الصراف بمراجعته وتأكيده لك.</p>
                 </div>
-            </section>
 
-            <!-- 4. TELLER DASHBOARD (Mozaf Dashboard) -->
-            <section id="tab-teller-dashboard" class="hidden bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
-                <div class="flex flex-wrap justify-between items-center gap-4 mb-6 border-b border-slate-100 pb-4">
+                <div class="mt-6 bg-[#0B192C] text-white p-6 rounded-3xl border border-slate-800 shadow-xl">
+                    <h4 class="text-sm font-black text-[#FFD700] mb-2"><i class="fa-solid fa-[#FFD700] fa-circle-info ml-1"></i> معلومات هامة للعملاء</h4>
+                    <ul class="text-xs space-y-2 text-slate-300 list-disc list-inside">
+                        <li>مواعيد العمل: طوال أيام الأسبوع من 8:00 ص إلى 9:00 م.</li>
+                        <li>يوم الجمعة: يفتح الفرع عقب صلاة الجمعة مباشرة حتى 9:00 م.</li>
+                        <li>يرجى إحضار أصل إثبات الشخصية (بطاقة الرقم القومي أو جواز السفر) عند الحضور للفرع.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: RATES & CALCULATOR -->
+        <section id="tab-rates" class="hidden grid lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
+                <div class="flex justify-between items-center mb-6">
                     <div>
-                        <h2 class="text-xl font-black text-[#0B192C] flex items-center gap-2">
-                            <i class="fa-solid fa-user-shield text-amber-500"></i> لوحة تحكم موظف الصرافة (فرع سمالوط)
-                        </h2>
-                        <p class="text-xs text-slate-500 mt-0.5">إدارة ومراجعة طلبات الحجز والصرف وتحديث حالتها وإشعار العميل</p>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <button onclick="renderTellerDashboard()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1">
-                            <i class="fa-solid fa-rotate text-amber-500"></i> تحديث القائمة
-                        </button>
+                        <h2 class="text-xl font-black text-[#0B192C]">أسعار الصرف المعلنة اليوم (بنك مصر)</h2>
+                        <p class="text-xs text-slate-500 mt-1">تحديث مباشر لأسعار العملات الرسمية</p>
                     </div>
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-right border-collapse">
+                    <table class="w-full text-right">
                         <thead>
-                            <tr class="bg-slate-100 text-slate-700 text-xs font-black">
-                                <th class="p-3">رقم الطلب</th>
-                                <th class="p-3">اسم العميل ورقم الهاتفك</th>
-                                <th class="p-3">تفاصيل الطلب والمبلغ</th>
-                                <th class="p-3">الموعد المطلوب</th>
-                                <th class="p-3 text-center">الحالة الحالية</th>
-                                <th class="p-3 text-center">الإجراء المتاح للصراف</th>
+                            <tr class="border-b border-slate-200 text-xs text-slate-500 font-bold">
+                                <th class="pb-3">العملة</th>
+                                <th class="pb-3">شراء (نشتري منك)</th>
+                                <th class="pb-3">بيع (نبيع لك)</th>
                             </tr>
                         </thead>
-                        <tbody id="teller-requests-body" class="divide-y divide-slate-100 text-xs">
-                            <!-- Populated dynamically -->
+                        <tbody id="rates-table-body" class="divide-y divide-slate-100 text-sm">
+                            <!-- JS Will Render Rates Here -->
                         </tbody>
                     </table>
                 </div>
-            </section>
-
-        </main>
-    </div>
-
-    <!-- Footer -->
-    <footer class="bg-[#0B192C] text-slate-300 text-xs py-5 border-t-2 border-[#D4AF37] mt-auto">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-right">
-            <div>
-                <p class="font-bold text-white text-sm">شركة الصرافة المصرية - فرع سمالوط</p>
-                <p class="text-slate-400 mt-0.5">الشارع الجديد - بجوار البنك الأهلي المصري - المنيا</p>
             </div>
-            <p class="text-slate-400">جميع الحقوق محفوظة &copy; <span id="current-year"></span></p>
-        </div>
-    </footer>
 
-    <!-- Pure Vanilla JS Logic -->
-    <script>
-        // Exact rates
-        const currenciesData = [
-            { code: 'USD', name: 'دولار أمريكي', buy: 52.38, sell: 52.48, flag: '🇺🇸' },
-            { code: 'EUR', name: 'يورو أوروبي', buy: 58.46, sell: 59.09, flag: '🇪🇺' },
-            { code: 'SAR', name: 'ريال سعودي', buy: 13.92, sell: 13.95, flag: '🇸🇦' },
-            { code: 'AED', name: 'درهم إماراتي', buy: 14.25, sell: 14.29, flag: '🇦🇪' },
-            { code: 'GBP', name: 'جنيه إسترليني', buy: 69.21, sell: 69.42, flag: '🇬🇧' },
-            { code: 'KWD', name: 'دينار كويتي', buy: 166.28, sell: 170.58, flag: '🇰🇼' }
-        ];
+            <!-- Calculator -->
+            <div class="bg-[#0B192C] text-white p-6 rounded-3xl shadow-xl border border-slate-800 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-lg font-black text-[#FFD700] mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-calculator"></i> الحاسبة المباشرة
+                    </h3>
 
-        let calcMode = 'buy';
-        let currentRole = 'client';
-
-        // Load or initialize state requests
-        function getRequests() {
-            const data = localStorage.getItem('exchange_requests');
-            return data ? JSON.parse(data) : [
-                {
-                    id: 'REQ-1001',
-                    name: 'محمد علي حسن',
-                    phone: '01012345678',
-                    type: 'exchange_sell',
-                    typeName: 'شراء مسبق (نبيع لك)',
-                    datetime: '2026-10-06T11:00',
-                    currency: 'SAR',
-                    amount: '2000',
-                    notes: 'اريد تحويل نقدية للسفر',
-                    status: 'pending',
-                    created: new Date().toISOString()
-                }
-            ];
-        }
-
-        function saveRequests(requests) {
-            localStorage.setItem('exchange_requests', JSON.stringify(requests));
-            updateBadges();
-        }
-
-        // Role Switching (Client / Teller)
-        function switchRole(role) {
-            currentRole = role;
-            const btnClient = document.getElementById('role-btn-client');
-            const btnTeller = document.getElementById('role-btn-teller');
-            const tellerTabBtn = document.getElementById('btn-teller-dashboard');
-
-            if (role === 'teller') {
-                btnTeller.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all bg-[#D4AF37] text-[#0B192C]';
-                btnClient.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all bg-slate-700 text-slate-200 hover:text-white';
-                tellerTabBtn.classList.remove('hidden');
-                switchTab('teller-dashboard');
-            } else {
-                btnClient.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all bg-[#D4AF37] text-[#0B192C]';
-                btnTeller.className = 'px-3 py-1 rounded-lg text-xs font-bold transition-all bg-slate-700 text-slate-200 hover:text-white';
-                tellerTabBtn.classList.add('hidden');
-                switchTab('client-booking');
-            }
-        }
-
-        // Tab Switcher
-        function switchTab(tabId) {
-            document.querySelectorAll('section[id^="tab-"]').forEach(s => s.classList.add('hidden'));
-            document.querySelectorAll('.main-tab').forEach(b => b.classList.remove('active'));
-
-            const targetSection = document.getElementById('tab-' + tabId);
-            const targetBtn = document.getElementById('btn-' + tabId);
-
-            if (targetSection) targetSection.classList.remove('hidden');
-            if (targetBtn) targetBtn.classList.add('active');
-
-            if (tabId === 'client-status') renderClientStatusList();
-            if (tabId === 'teller-dashboard') renderTellerDashboard();
-        }
-
-        function toggleExchangeFields() {
-            const type = document.getElementById('req-type').value;
-            const detailsBox = document.getElementById('exchange-details-box');
-            if (type === 'appointment') {
-                detailsBox.classList.add('hidden');
-            } else {
-                detailsBox.classList.remove('hidden');
-            }
-        }
-
-        // Submit New Request from Client
-        function submitClientRequest(e) {
-            e.preventDefault();
-            const name = document.getElementById('req-name').value;
-            const phone = document.getElementById('req-phone').value;
-            const type = document.getElementById('req-type').value;
-            const datetime = document.getElementById('req-datetime').value;
-            const currency = document.getElementById('req-currency').value;
-            const amount = document.getElementById('req-amount').value;
-            const notes = document.getElementById('req-notes').value;
-
-            const typeNames = {
-                'appointment': 'حجز موعد بالفرع',
-                'exchange_buy': 'صرف مسبق (تبيع لنا)',
-                'exchange_sell': 'شراء مسبق (نبيع لك)'
-            };
-
-            const newReq = {
-                id: 'REQ-' + Math.floor(1000 + Math.random() * 9000),
-                name,
-                phone,
-                type,
-                typeName: typeNames[type],
-                datetime,
-                currency: type !== 'appointment' ? currency : '-',
-                amount: type !== 'appointment' ? amount : '-',
-                notes,
-                status: 'pending',
-                created: new Date().toISOString()
-            };
-
-            const requests = getRequests();
-            requests.unshift(newReq);
-            saveRequests(requests);
-
-            // Notify & Redirect
-            alert(`تم تقديم طلبك بنجاح برقم: ${newReq.id}\nحالة الطلب الآن: قيد الانتظار لموافقة الصراف.`);
-            
-            // Open WhatsApp confirm to customer
-            let cleanPhone = phone.replace(/[^0-9]/g, '');
-            if (cleanPhone.startsWith('0')) cleanPhone = '20' + cleanPhone.substring(1);
-            const msg = `مرحباً شركة الصرافة المصرية (فرع سمالوط)،\nقم بتقديم طلب جديد:\n🎫 كود الطلب: ${newReq.id}\n👤 الاسم: ${name}\n📌 الخدمة: ${typeNames[type]}\n🗓 الموعد: ${datetime.replace('T', ' الساعة ')}\n\nفي انتظار موافقة الصراف.`;
-            
-            window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
-
-            document.getElementById('status-search-phone').value = phone;
-            switchTab('client-status');
-        }
-
-        // Render Client View Requests
-        function renderClientStatusList() {
-            const container = document.getElementById('client-requests-list');
-            const searchPhone = document.getElementById('status-search-phone').value.trim();
-            const requests = getRequests();
-
-            let filtered = requests;
-            if (searchPhone) {
-                filtered = requests.filter(r => r.phone.includes(searchPhone));
-            }
-
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-8 text-slate-400 font-semibold">
-                        لا توجد طلبات مسجلة لهذا الرقم حتى الآن.
-                    </div>
-                `;
-                return;
-            }
-
-            const statusBadges = {
-                'pending': '<span class="badge-pending px-2.5 py-1 rounded-lg text-xs font-bold"><i class="fa-solid fa-hourglass-start ml-1"></i> قيد الانتظار</span>',
-                'approved': '<span class="badge-approved px-2.5 py-1 rounded-lg text-xs font-bold"><i class="fa-solid fa-circle-check ml-1"></i> تم قبول الطلب</span>',
-                'rejected': '<span class="badge-rejected px-2.5 py-1 rounded-lg text-xs font-bold"><i class="fa-solid fa-circle-xmark ml-1"></i> مرفوض</span>',
-                'completed': '<span class="badge-completed px-2.5 py-1 rounded-lg text-xs font-bold"><i class="fa-solid fa-check-double ml-1"></i> تم الموعد والتنفيذ</span>'
-            };
-
-            container.innerHTML = filtered.map(r => `
-                <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <div class="flex items-center gap-3">
-                            <span class="font-black text-[#0B192C] text-sm">${r.id}</span>
-                            ${statusBadges[r.status] || ''}
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1.5 font-bold">نوع المعاملة</label>
+                            <div class="grid grid-cols-2 gap-2 bg-slate-800 p-1 rounded-xl">
+                                <button type="button" id="btn-calc-buy" onclick="setCalcType('buy')" class="py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C]">شراء</button>
+                                <button type="button" id="btn-calc-sell" onclick="setCalcType('sell')" class="py-2 text-xs font-bold rounded-lg text-slate-300">بيع</button>
+                            </div>
                         </div>
-                        <p class="font-bold text-slate-800 text-sm mt-1">${r.typeName} ${r.amount !== '-' ? `(${r.amount} ${r.currency})` : ''}</p>
-                        <p class="text-xs text-slate-500 mt-0.5"><i class="fa-regular fa-clock ml-1"></i> الموعد: ${r.datetime.replace('T', ' - الساعة ')}</p>
-                        ${r.notes ? `<p class="text-xs text-slate-600 mt-1 italic">ملاحظاتك: ${r.notes}</p>` : ''}
-                    </div>
 
-                    <div class="text-left">
-                        ${r.status === 'approved' ? `
-                            <div class="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl text-xs text-emerald-800 font-bold">
-                                <i class="fa-solid fa-circle-info text-emerald-600 ml-1"></i> وافق الصراف! تفضل بزيارة الفرع في الموعد المحدد.
-                            </div>
-                        ` : ''}
-                        ${r.status === 'rejected' ? `
-                            <div class="bg-red-50 border border-red-200 p-2.5 rounded-xl text-xs text-red-800 font-bold">
-                                <i class="fa-solid fa-triangle-exclamation text-red-600 ml-1"></i> نعتذر، الطلب غير متاح لعدم توفر السيولة أو تعارض الموعد.
-                            </div>
-                        ` : ''}
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1.5 font-bold">اختر العملة</label>
+                            <select id="calc-currency" onchange="calculateTotal()" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white outline-none font-bold">
+                                <option value="USD">دولار أمريكي (USD)</option>
+                                <option value="EUR">يورو أوروبي (EUR)</option>
+                                <option value="SAR">ريال سعودي (SAR)</option>
+                                <option value="AED">درهم إماراتي (AED)</option>
+                                <option value="GBP">جنيه إسترليني (GBP)</option>
+                                <option value="KWD">دينار كويتي (KWD)</option>
+                                <option value="QAR">ريال قطري (QAR)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1.5 font-bold">المبلغ بالعملة الأجنبية</label>
+                            <input type="number" id="calc-amount" value="100" oninput="calculateTotal()" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white font-bold outline-none text-left text-lg" dir="ltr" />
+                        </div>
                     </div>
                 </div>
-            `).join('');
+
+                <div class="mt-6 pt-6 border-t border-slate-800">
+                    <p class="text-xs text-slate-400 mb-1">المبلغ الإجمالي بالجنيه المصري</p>
+                    <div id="calc-total" class="text-3xl font-black text-[#FFD700]">0.00 <span class="text-sm font-normal text-slate-300">ج.م</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: TELLER DASHBOARD -->
+        <section id="tab-teller" class="hidden bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
+            <div class="flex flex-wrap justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-xl font-black text-[#0B192C]">لوحة تحكم الصراف - إدارة الطلبات الواردة</h2>
+                    <p class="text-xs text-slate-500 mt-1">الطلبات المسجلة من العملاء للفرع</p>
+                </div>
+                <button onclick="renderTellerRequests()" class="bg-[#0B192C] text-[#FFD700] px-4 py-2 rounded-xl text-xs font-bold">
+                    <i class="fa-solid fa-rotate"></i> تحديث القائمة
+                </button>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-200 text-xs text-slate-500 font-bold">
+                            <th class="pb-3">كود الطلب</th>
+                            <th class="pb-3">العميل</th>
+                            <th class="pb-3">الهاتف</th>
+                            <th class="pb-3">نوع الطلب</th>
+                            <th class="pb-3">التاريخ والوقت</th>
+                            <th class="pb-3">الحالة</th>
+                            <th class="pb-3">الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teller-requests-body" class="divide-y divide-slate-100">
+                        <!-- JS Will Render Requests -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Pure JavaScript Logic -->
+    <script>
+        const BRANCH_WHATSAPP = '201003394577';
+
+        let currenciesData = [
+            { code: 'USD', name: 'دولار أمريكي', buy: 52.38, sell: 52.48 },
+            { code: 'EUR', name: 'يورو أوروبي', buy: 58.46, sell: 59.09 },
+            { code: 'SAR', name: 'ريال سعودي', buy: 13.92, sell: 13.95 },
+            { code: 'AED', name: 'درهم إماراتي', buy: 14.25, sell: 14.29 },
+            { code: 'GBP', name: 'جنيه إسترليني', buy: 69.21, sell: 69.42 },
+            { code: 'KWD', name: 'دينار كويتي', buy: 169.81, sell: 170.31 },
+            { code: 'QAR', name: 'ريال قطري', buy: 14.36, sell: 14.40 }
+        ];
+
+        let calcType = 'buy';
+
+        // Set default date to today
+        document.getElementById('request-date').value = new Date().toISOString().split('T')[0];
+
+        function switchTab(tab) {
+            document.querySelectorAll('section[id^="tab-"]').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            document.getElementById('btn-' + tab).classList.add('active');
+
+            if(tab === 'teller') renderTellerRequests();
         }
 
-        function filterClientRequests() {
-            renderClientStatusList();
-        }
-
-        // Render Teller Dashboard
-        function renderTellerDashboard() {
-            const tbody = document.getElementById('teller-requests-body');
-            const requests = getRequests();
-
-            if (requests.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">لا توجد طلبات مسجلة للنظام حتى الآن</td></tr>`;
-                return;
+        function toggleCurrencyFields() {
+            const type = document.getElementById('request-type').value;
+            const group = document.getElementById('currency-amount-group');
+            if(type.includes('حجز موعد فقط')) {
+                group.classList.add('hidden');
+            } else {
+                group.classList.remove('hidden');
             }
-
-            const statusBadges = {
-                'pending': '<span class="badge-pending px-2 py-0.5 rounded text-[11px] font-bold">قيد الانتظار</span>',
-                'approved': '<span class="badge-approved px-2 py-0.5 rounded text-[11px] font-bold">مقبول</span>',
-                'rejected': '<span class="badge-rejected px-2 py-0.5 rounded text-[11px] font-bold">مرفوض</span>',
-                'completed': '<span class="badge-completed px-2 py-0.5 rounded text-[11px] font-bold">منتهي</span>'
-            };
-
-            tbody.innerHTML = requests.map(r => `
-                <tr class="hover:bg-slate-50 font-medium">
-                    <td class="p-3 font-black text-[#0B192C]">${r.id}</td>
-                    <td class="p-3">
-                        <div class="font-bold text-slate-800">${r.name}</div>
-                        <div class="text-slate-500" dir="ltr">${r.phone}</div>
-                    </td>
-                    <td class="p-3">
-                        <div class="font-bold">${r.typeName}</div>
-                        ${r.amount !== '-' ? `<div class="text-emerald-700 font-black">${r.amount} ${r.currency}</div>` : ''}
-                    </td>
-                    <td class="p-3 font-bold text-slate-700">${r.datetime.replace('T', ' ')}</td>
-                    <td class="p-3 text-center">${statusBadges[r.status]}</td>
-                    <td class="p-3 text-center">
-                        <div class="flex items-center justify-center gap-1.5">
-                            <button onclick="updateStatusByTeller('${r.id}', 'approved')" title="موافقة" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all">
-                                <i class="fa-solid fa-check"></i> قبول
-                            </button>
-                            <button onclick="updateStatusByTeller('${r.id}', 'rejected')" title="رفض" class="bg-red-600 hover:bg-red-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all">
-                                <i class="fa-solid fa-xmark"></i> رفض
-                            </button>
-                            <button onclick="updateStatusByTeller('${r.id}', 'completed')" title="إنهاء" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all">
-                                <i class="fa-solid fa-flag-checkered"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
         }
 
-        // Update Request Status by Teller and generate WhatsApp reply link
-        function updateStatusByTeller(reqId, newStatus) {
-            const requests = getRequests();
-            const index = requests.findIndex(r => r.id === reqId);
-            if (index === -1) return;
-
-            requests[index].status = newStatus;
-            saveRequests(requests);
-            renderTellerDashboard();
-
-            const req = requests[index];
-            let cleanPhone = req.phone.replace(/[^0-9]/g, '');
-            if (cleanPhone.startsWith('0')) cleanPhone = '20' + cleanPhone.substring(1);
-
-            let statusText = '';
-            if (newStatus === 'approved') statusText = `✅ تم قبول طلبكم رقم (${req.id}) بنجاح! ننتظركم في الفرع في الموعد المحدد (${req.datetime.replace('T', ' الساعة ')}).`;
-            else if (newStatus === 'rejected') statusText = `❌ نعتذر منكم، تعذر قبول الطلب رقم (${req.id}) حالياً لعدم توفر السيولة المطلوب أو عدم ملائمة الموعد.`;
-            else if (newStatus === 'completed') statusText = `🎉 تم تنفيذ واكتمال المعاملة رقم (${req.id}). شكراً لتعاملكم مع شركة الصرافة المصرية فرع سمالوط.`;
-
-            const waMsg = `أهلاً بك أستاذ ${req.name}،\nمن شركة الصرافة المصرية - فرع سمالوط:\n\n${statusText}`;
-
-            if (confirm(`تم تحديث حالة الطلب إلى [${newStatus}]. هل تريد فتح الواتساب لإرسال الإشعار للعميل الآن؟`)) {
-                window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMsg)}`, '_blank');
-            }
-        }
-
-        function updateBadges() {
-            const requests = getRequests();
-            const pending = requests.filter(r => r.status === 'pending').length;
-            const badge = document.getElementById('pending-count-badge');
-            if (badge) badge.innerText = pending;
-        }
-
-        // Rates & Calculator logic
         function renderRatesTable() {
             const tbody = document.getElementById('rates-table-body');
-            tbody.innerHTML = currenciesData.map(c => `
-                <tr class="hover:bg-slate-50">
-                    <td class="p-3 flex items-center gap-2"><span class="text-xl">${c.flag}</span> ${c.name} (${c.code})</td>
-                    <td class="p-3 text-center text-emerald-600 font-black">${c.buy.toFixed(2)} ج.م</td>
-                    <td class="p-3 text-center text-slate-900 font-black">${c.sell.toFixed(2)} ج.م</td>
-                </tr>
-            `).join('');
-            calculateExchange();
+            tbody.innerHTML = '';
+            currenciesData.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50';
+                tr.innerHTML = `
+                    <td class="py-4 font-bold">${c.name} (${c.code})</td>
+                    <td class="py-4 font-bold text-emerald-600">${c.buy.toFixed(2)} ج.م</td>
+                    <td class="py-4 font-bold text-slate-900">${c.sell.toFixed(2)} ج.م</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            calculateTotal();
         }
 
-        function setCalcMode(mode) {
-            calcMode = mode;
-            document.getElementById('calc-buy-btn').className = mode === 'buy' ? 'py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C]' : 'py-2 text-xs font-bold rounded-lg text-slate-300';
-            document.getElementById('calc-sell-btn').className = mode === 'sell' ? 'py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C]' : 'py-2 text-xs font-bold rounded-lg text-slate-300';
-            calculateExchange();
+        function setCalcType(type) {
+            calcType = type;
+            const btnBuy = document.getElementById('btn-calc-buy');
+            const btnSell = document.getElementById('btn-calc-sell');
+            if (type === 'buy') {
+                btnBuy.className = 'py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C]';
+                btnSell.className = 'py-2 text-xs font-bold rounded-lg text-slate-300';
+            } else {
+                btnSell.className = 'py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C]';
+                btnBuy.className = 'py-2 text-xs font-bold rounded-lg text-slate-300';
+            }
+            calculateTotal();
         }
 
-        function calculateExchange() {
-            const code = document.getElementById('calc-currency-select').value;
-            const amount = parseFloat(document.getElementById('calc-amount-input').value) || 0;
-            const curr = currenciesData.find(c => c.code === code) || currenciesData[0];
-            const rate = calcMode === 'buy' ? curr.buy : curr.sell;
-            const total = (amount * rate).toLocaleString('ar-EG', { minimumFractionDigits: 2 });
-            document.getElementById('calc-result').innerHTML = `${total} <span class="text-sm font-normal text-slate-300">ج.م</span>`;
-        }
-
-        // Initialization
-        window.addEventListener('DOMContentLoaded', () => {
-            renderRatesTable();
-            updateBadges();
-            document.getElementById('current-year').innerText = new Date().getFullYear();
-
-            // Default datetime set to tomorrow 10am
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(10, 0, 0, 0);
-            document.getElementById('req-datetime').value = tomorrow.toISOString().slice(0, 16);
-        });
-    </script>
-</body>
-</html>
+        function calculateTotal() {
+            const code = document.getElementById('calc-currency').value;
+            const amount = parseFloat(document.getElementById('calc-amount').value)
