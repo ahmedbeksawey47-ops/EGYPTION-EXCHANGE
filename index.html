@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -18,10 +17,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Cairo', sans-serif; }
+        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen">
+<body class="bg-slate-50 text-slate-900 min-h-screen">
     <div id="root"></div>
 
     <script type="text/babel">
@@ -38,9 +37,10 @@
         ];
 
         function App() {
-            const [activeTab, setActiveTab] = useState('queue');
+            const [activeTab, setActiveTab] = useState('rates');
             const [currencies, setCurrencies] = useState(INITIAL_RATES);
             const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString('ar-EG'));
+            const [loadingRates, setLoadingRates] = useState(false);
 
             const [calcAmount, setCalcAmount] = useState(100);
             const [calcCurrency, setCalcCurrency] = useState('USD');
@@ -54,9 +54,42 @@
             const [isFastTrack, setIsFastTrack] = useState(false);
             const [myTicket, setMyTicket] = useState(null);
 
-            const [waInstanceId, setWaInstanceId] = useState('');
-            const [waToken, setWaToken] = useState('');
-            const [waStatus, setWaStatus] = useState('');
+            // جلب أسعار العملات الحية أوتوماتيكياً
+            const fetchLiveRates = async () => {
+                setLoadingRates(true);
+                try {
+                    const res = await fetch('https://open.er-api.com/v6/latest/USD');
+                    const data = await res.json();
+                    if (data && data.rates && data.rates.EGP) {
+                        const usdEgp = data.rates.EGP;
+                        const eurEgp = usdEgp / (data.rates.EUR || 0.92);
+                        const sarEgp = usdEgp / (data.rates.SAR || 3.75);
+                        const aedEgp = usdEgp / (data.rates.AED || 3.67);
+                        const gbpEgp = usdEgp / (data.rates.GBP || 0.78);
+                        const kwdEgp = usdEgp / (data.rates.KWD || 0.31);
+                        const qarEgp = usdEgp / (data.rates.QAR || 3.64);
+
+                        setCurrencies([
+                            { code: 'USD', name: 'دولار أمريكي', buy: (usdEgp - 0.10), sell: usdEgp, change: '+0.10' },
+                            { code: 'EUR', name: 'يورو أوروبي', buy: (eurEgp - 0.15), sell: eurEgp, change: '-0.05' },
+                            { code: 'SAR', name: 'ريال سعودي', buy: (sarEgp - 0.04), sell: sarEgp, change: '0.00' },
+                            { code: 'AED', name: 'درهم إماراتي', buy: (aedEgp - 0.04), sell: aedEgp, change: '0.00' },
+                            { code: 'GBP', name: 'جنيه إسترليني', buy: (gbpEgp - 0.20), sell: gbpEgp, change: '+0.25' },
+                            { code: 'KWD', name: 'دينار كويتي', buy: (kwdEgp - 0.50), sell: kwdEgp, change: '+0.40' },
+                            { code: 'QAR', name: 'ريال قطري', buy: (qarEgp - 0.05), sell: qarEgp, change: '0.00' },
+                        ]);
+                        setLastUpdated(new Date().toLocaleTimeString('ar-EG'));
+                    }
+                } catch (e) {
+                    console.log("خطأ في جلب الأسعار، تم الاعتماد على الأسعار المحلية المحدثة");
+                } finally {
+                    setLoadingRates(false);
+                }
+            };
+
+            useEffect(() => {
+                fetchLiveRates();
+            }, []);
 
             const handleGetTicket = (e) => {
                 e.preventDefault();
@@ -84,114 +117,121 @@
             const totalEgp = (calcAmount * currentRate).toLocaleString('ar-EG', { maximumFractionDigits: 2 });
 
             return (
-                <div className="min-h-screen bg-slate-950 text-slate-100 pb-16">
+                <div className="min-h-screen bg-slate-100 text-slate-800 pb-16">
                     {/* Header */}
-                    <header className="bg-slate-900 border-b border-amber-500/30 sticky top-0 z-50">
+                    <header className="bg-[#0B192C] text-white shadow-xl border-b-4 border-[#D4AF37]">
                         <div className="max-w-7xl mx-auto px-4 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
                             <div className="flex items-center gap-4">
-                                <div className="w-14 h-14 bg-amber-500 rounded-2xl flex items-center justify-center text-slate-950 font-black text-2xl shadow-lg">
+                                <div className="w-14 h-14 bg-gradient-to-tr from-[#D4AF37] to-[#FFD700] rounded-2xl flex items-center justify-center text-[#0B192C] font-black text-2xl shadow-lg">
                                     <i className="fa-solid fa-building-columns"></i>
                                 </div>
                                 <div>
-                                    <h1 className="text-2xl font-black text-amber-400">شركة الصرافة المصرية</h1>
-                                    <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
-                                        <i className="fa-solid fa-location-dot text-amber-500"></i> فرع سمالوط - محافظة المنيا
+                                    <h1 className="text-2xl font-black text-[#FFD700]">شركة الصرافة المصرية</h1>
+                                    <p className="text-xs text-slate-300 flex items-center gap-1.5 mt-0.5">
+                                        <i className="fa-solid fa-location-dot text-[#D4AF37]"></i> فرع سمالوط - محافظة المنيا
                                     </p>
                                 </div>
                             </div>
 
                             <div className="flex flex-wrap items-center gap-2 text-xs">
-                                <a href="tel:0863446509" className="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 border border-slate-700 px-3.5 py-2 rounded-xl transition-all font-bold flex items-center gap-2">
-                                    <i className="fa-solid fa-phone text-amber-400"></i> 086-3446509
+                                <a href="tel:0863446509" className="bg-slate-800 hover:bg-[#D4AF37] hover:text-[#0B192C] border border-slate-700 px-3.5 py-2 rounded-xl transition-all font-bold flex items-center gap-2 text-white">
+                                    <i className="fa-solid fa-phone text-[#D4AF37]"></i> 086-3446509
                                 </a>
-                                <a href="tel:0863446519" className="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 border border-slate-700 px-3.5 py-2 rounded-xl transition-all font-bold flex items-center gap-2">
-                                    <i className="fa-solid fa-phone text-amber-400"></i> 086-3446519
+                                <a href="tel:0863446519" className="bg-slate-800 hover:bg-[#D4AF37] hover:text-[#0B192C] border border-slate-700 px-3.5 py-2 rounded-xl transition-all font-bold flex items-center gap-2 text-white">
+                                    <i className="fa-solid fa-phone text-[#D4AF37]"></i> 086-3446519
                                 </a>
-                                <a href="https://maps.google.com/?q=Samalut+Minya+Egypt" target="_blank" className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3.5 py-2 rounded-xl transition-all font-black flex items-center gap-2 shadow-md">
+                                <a href="https://maps.google.com/?q=Samalut+Minya+Egypt" target="_blank" className="bg-[#D4AF37] hover:bg-[#FFD700] text-[#0B192C] px-3.5 py-2 rounded-xl transition-all font-black flex items-center gap-2 shadow-md">
                                     <i className="fa-solid fa-map-location-dot"></i> موقع GPS
                                 </a>
                             </div>
                         </div>
 
-                        <div className="bg-slate-900/90 border-t border-slate-800 py-2.5 px-4 text-xs text-slate-300">
+                        <div className="bg-[#1E3E62] py-2.5 px-4 text-xs text-slate-100">
                             <div className="max-w-7xl mx-auto flex flex-wrap justify-around items-center gap-2 text-center">
-                                <div><i className="fa-regular fa-clock text-amber-400 ml-1.5"></i><strong>جميع أيام الأسبوع:</strong> من 8:00 صباحاً حتى 9:00 مساءً</div>
-                                <div className="hidden md:block text-slate-700">|</div>
-                                <div><i className="fa-solid fa-mosque text-amber-400 ml-1.5"></i><strong>يوم الجمعة:</strong> من بعد صلاة الجمعة حتى 9:00 مساءً</div>
+                                <div><i className="fa-regular fa-clock text-[#FFD700] ml-1.5"></i><strong>جميع أيام الأسبوع:</strong> من 8:00 صباحاً حتى 9:00 مساءً</div>
+                                <div className="hidden md:block text-slate-500">|</div>
+                                <div><i className="fa-solid fa-mosque text-[#FFD700] ml-1.5"></i><strong>يوم الجمعة:</strong> من بعد صلاة الجمعة حتى 9:00 مساءً</div>
                             </div>
                         </div>
                     </header>
 
-                    {/* Navigation */}
+                    {/* Navigation Tabs */}
                     <div className="max-w-7xl mx-auto px-4 mt-8">
-                        <div className="flex border-b border-slate-800 overflow-x-auto gap-2">
-                            <button onClick={()=>setActiveTab('queue')} className={`px-5 py-3 font-bold text-sm rounded-t-2xl transition-all ${activeTab==='queue'?'bg-amber-500 text-slate-950':'bg-slate-900 text-slate-400'}`}>
+                        <div className="flex border-b border-slate-300 overflow-x-auto gap-2">
+                            <button onClick={()=>setActiveTab('rates')} className={`px-5 py-3 font-bold text-sm rounded-t-2xl transition-all ${activeTab==='rates'?'bg-[#0B192C] text-[#FFD700] shadow-lg':'bg-white text-slate-600 hover:bg-slate-200'}`}>
+                                <i className="fa-solid fa-calculator ml-1"></i> أسعار العملات والحاسبة الحية
+                            </button>
+                            <button onClick={()=>setActiveTab('queue')} className={`px-5 py-3 font-bold text-sm rounded-t-2xl transition-all ${activeTab==='queue'?'bg-[#0B192C] text-[#FFD700] shadow-lg':'bg-white text-slate-600 hover:bg-slate-200'}`}>
                                 <i className="fa-solid fa-ticket ml-1"></i> خدمة الدور والانتظار الذكي
                             </button>
-                            <button onClick={()=>setActiveTab('rates')} className={`px-5 py-3 font-bold text-sm rounded-t-2xl transition-all ${activeTab==='rates'?'bg-amber-500 text-slate-950':'bg-slate-900 text-slate-400'}`}>
-                                <i className="fa-solid fa-calculator ml-1"></i> أسعار العملات والحاسبة
+                            <button onClick={()=>setActiveTab('monitor')} className={`px-5 py-3 font-bold text-sm rounded-t-2xl transition-all ${activeTab==='monitor'?'bg-[#0B192C] text-[#FFD700] shadow-lg':'bg-white text-slate-600 hover:bg-slate-200'}`}>
+                                <i className="fa-solid fa-desktop ml-1"></i> شاشة العرض الحية
                             </button>
                         </div>
                     </div>
 
-                    {/* Content */}
+                    {/* Main Content */}
                     <main className="max-w-7xl mx-auto px-4 mt-8">
-                        {activeTab === 'queue' ? (
-                            <div className="grid md:grid-cols-2 gap-8">
-                                <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800">
-                                    <h2 className="text-xl font-black text-amber-400 mb-2"><i className="fa-solid fa-mobile-screen-button ml-2"></i> حجز رقم دور إلكتروني</h2>
-                                    <form onSubmit={handleGetTicket} className="space-y-4 mt-4">
+                        {/* TAB 1: RATES */}
+                        {activeTab === 'rates' && (
+                            <div className="grid lg:grid-cols-3 gap-8">
+                                <div className="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
+                                    <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
                                         <div>
-                                            <label className="block text-xs font-bold text-slate-300 mb-1">رقم الهاتف (واتساب)</label>
-                                            <input type="tel" required placeholder="01012345678" value={phone} onChange={e=>setPhone(e.target.value)} className="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-left text-white" dir="ltr" />
+                                            <h2 className="text-xl font-black text-[#0B192C]">أسعار العملات الحية المحدثة</h2>
+                                            <p className="text-xs text-slate-500 mt-1"><i className="fa-solid fa-rotate ml-1 text-[#D4AF37]"></i> آخر تحديث للأسعار: {lastUpdated}</p>
                                         </div>
-
-                                        <div>
-                                            <label className="block text-xs font-bold text-slate-300 mb-1">اختر الخدمة</label>
-                                            <select value={serviceType} onChange={e=>setServiceType(e.target.value)} className="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-white">
-                                                <option value="standard">صرف / تغيير عادي</option>
-                                                <option value="pre-order">صرف مسبق (تحديد المبلغ قبل الوصول)</option>
-                                                <option value="appointment">حجز موعد محدد</option>
-                                            </select>
-                                        </div>
-
-                                        <button type="submit" className="w-full bg-amber-500 text-slate-950 font-black py-4 rounded-xl shadow-lg">
-                                            تأكيد والحصول على رقم الدور
+                                        <button onClick={fetchLiveRates} disabled={loadingRates} className="bg-[#0B192C] hover:bg-[#1E3E62] text-[#FFD700] px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
+                                            <i className={`fa-solid fa-rotate ${loadingRates ? 'animate-spin' : ''}`}></i>
+                                            {loadingRates ? 'جاري التحديث...' : 'تحديث الأسعار الآن'}
                                         </button>
-                                    </form>
+                                    </div>
+
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-right">
+                                            <thead>
+                                                <tr className="border-b border-slate-200 text-xs text-slate-500 font-bold">
+                                                    <th className="pb-3">العملة</th>
+                                                    <th className="pb-3">شراء (نشتري منك)</th>
+                                                    <th className="pb-3">بيع (نبيع لك)</th>
+                                                    <th className="pb-3">الحالة</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100 text-sm">
+                                                {currencies.map(curr => (
+                                                    <tr key={curr.code} className="hover:bg-slate-50 transition-colors">
+                                                        <td className="py-4 font-bold flex items-center gap-2">
+                                                            <span className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-xs font-black text-[#0B192C]">{curr.code}</span>
+                                                            {curr.name}
+                                                        </td>
+                                                        <td className="py-4 font-bold text-emerald-600">{curr.buy.toFixed(2)} ج.م</td>
+                                                        <td className="py-4 font-bold text-slate-900">{curr.sell.toFixed(2)} ج.م</td>
+                                                        <td className="py-4 font-bold text-xs text-emerald-500">
+                                                            <i className="fa-solid fa-arrow-up-right-dots ml-1"></i> حي ومباشر
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
 
-                                <div className="flex items-center justify-center">
-                                    {myTicket ? (
-                                        <div className="bg-slate-900 border-2 border-amber-500 rounded-3xl p-6 w-full text-center">
-                                            <p className="text-xs text-slate-400">رقم دورك الحالي</p>
-                                            <div className="text-6xl font-black text-amber-400 my-2">{myTicket.number}</div>
-                                            <p className="text-xs text-amber-300">المتبقي قبلك: {myTicket.ahead} عملاء</p>
-                                        </div>
-                                    ) : (
-                                        <p className="text-slate-500 text-sm">ادخل بياناتك لإصدار رقم الدور</p>
-                                    )}
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800">
-                                <h2 className="text-xl font-black text-white mb-4">أسعار العملات الحية</h2>
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    {currencies.map(c => (
-                                        <div key={c.code} className="bg-slate-950 p-4 rounded-2xl flex justify-between items-center border border-slate-800">
-                                            <span className="font-bold">{c.name} ({c.code})</span>
-                                            <span className="text-emerald-400 font-bold">{c.buy} ج.م</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </main>
-                </div>
-            );
-        }
+                                {/* Calculator */}
+                                <div className="bg-[#0B192C] text-white p-6 rounded-3xl shadow-xl border border-slate-800 flex flex-col justify-between">
+                                    <div>
+                                        <h3 className="text-lg font-black text-[#FFD700] mb-4 flex items-center gap-2">
+                                            <i className="fa-solid fa-calculator"></i> الحاسبة المباشرة
+                                        </h3>
 
-        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-    </script>
-</body>
-</html>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-xs text-slate-300 mb-1.5 font-bold">نوع المعاملة</label>
+                                                <div className="grid grid-cols-2 gap-2 bg-slate-800 p-1 rounded-xl">
+                                                    <button type="button" onClick={()=>setCalcType('buy')} className={`py-2 text-xs font-bold rounded-lg transition-all ${calcType==='buy'?'bg-[#D4AF37] text-[#0B192C]':'text-slate-300'}`}>شراء (نشتري منك)</button>
+                                                    <button type="button" onClick={()=>setCalcType('sell')} className={`py-2 text-xs font-bold rounded-lg transition-all ${calcType==='sell'?'bg-[#D4AF37] text-[#0B192C]':'text-slate-300'}`}>بيع (نبيع لك)</button>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-xs text-slate-300 mb-1.5 font-bold">اختر العملة</label>
+                                                <select value={calcCurrency} onChange={e=>setCalcCurrency(e.target.value)}
