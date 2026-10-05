@@ -66,10 +66,10 @@
                 <i class="fa-solid fa-money-bill-wave ml-1 text-amber-500"></i> أسعار بنك مصر والحاسبة
             </button>
             <button onclick="switchTab('teller')" id="btn-teller" class="tab-btn px-5 py-3 font-bold text-sm rounded-t-2xl transition-all shadow-md">
-                <i class="fa-solid fa-user-tie ml-1 text-blue-600"></i> لوحة الصراف (الطلبات)
+                <i class="fa-solid fa-user-lock ml-1 text-blue-600"></i> لوحة الصراف (مقفولة بكلمة سر)
             </button>
             <button onclick="switchTab('contacts')" id="btn-contacts" class="tab-btn px-5 py-3 font-bold text-sm rounded-t-2xl transition-all shadow-md">
-                <i class="fa-solid fa-address-book ml-1 text-purple-600"></i> سجل أسماء وأرقام العملاء
+                <i class="fa-solid fa-address-book ml-1 text-purple-600"></i> سجل العملاء والأرقام (مقفولة)
             </button>
         </div>
     </div>
@@ -77,7 +77,7 @@
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 mt-8 pb-16">
 
-        <!-- TAB 1: CLIENT BOOKING (حجز موعد فقط) -->
+        <!-- TAB 1: CLIENT BOOKING (مفتوح للجميع) -->
         <section id="tab-client" class="grid md:grid-cols-2 gap-8">
             <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
                 <h2 class="text-xl font-black text-[#0B192C] mb-2 flex items-center gap-2">
@@ -135,7 +135,7 @@
             </div>
         </section>
 
-        <!-- TAB 2: RATES & CALCULATOR (أسعار بنك مصر) -->
+        <!-- TAB 2: RATES & CALCULATOR (مفتوح للجميع) -->
         <section id="tab-rates" class="hidden grid lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
                 <div class="flex justify-between items-center mb-6">
@@ -172,3 +172,424 @@
                     </h3>
 
                     <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1.5 font-bold">نوع العملية</label>
+                            <div class="grid grid-cols-2 gap-2 bg-slate-800 p-1 rounded-xl">
+                                <button type="button" id="btn-calc-buy" onclick="setCalcType('buy')" class="py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C]">شراء من العميل</button>
+                                <button type="button" id="btn-calc-sell" onclick="setCalcType('sell')" class="py-2 text-xs font-bold rounded-lg text-slate-300">بيع للعميل</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1.5 font-bold">العملة</label>
+                            <select id="calc-currency" onchange="calculateTotal()" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white outline-none font-bold">
+                                <option value="USD">دولار أمريكي (USD)</option>
+                                <option value="EUR">يورو أوروبي (EUR)</option>
+                                <option value="SAR">ريال سعودي (SAR)</option>
+                                <option value="AED">درهم إماراتي (AED)</option>
+                                <option value="GBP">جنيه إسترليني (GBP)</option>
+                                <option value="KWD">دينار كويتي (KWD)</option>
+                                <option value="QAR">ريال قطري (QAR)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1.5 font-bold">المبلغ بالعملة الأجنبية</label>
+                            <input type="number" id="calc-amount" value="100" oninput="calculateTotal()" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-white font-bold outline-none text-left text-lg" dir="ltr" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-slate-800">
+                    <p class="text-xs text-slate-400 mb-1">المبلغ القابل للتدفق بالجنيه المصري</p>
+                    <div id="calc-total" class="text-3xl font-black text-[#FFD700]">0.00 <span class="text-sm font-normal text-slate-300">ج.م</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PASSWORD LOGIN MODAL / SCREEN (للموظفين فقط) -->
+        <div id="auth-modal" class="hidden bg-white p-8 rounded-3xl border border-slate-200 shadow-xl max-w-md mx-auto text-center my-12">
+            <div class="w-16 h-16 bg-slate-100 text-[#0B192C] rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+                <i class="fa-solid fa-lock text-[#D4AF37]"></i>
+            </div>
+            <h3 class="text-xl font-black text-[#0B192C] mb-1">لوحة الصرافين المعتمدة</h3>
+            <p class="text-xs text-slate-500 mb-6">هذه المنطقة مخصصة لموظفي الفرع فقط. أدخل كلمة السر للدخول.</p>
+
+            <form onsubmit="handleAuthLogin(event)" class="space-y-4">
+                <input type="password" id="admin-pass-input" placeholder="كلمة السر (الافتراضية: admin2026)" required class="w-full bg-slate-50 border border-slate-300 p-3 rounded-xl text-center text-slate-900 font-black outline-none tracking-widest text-lg" />
+                <button type="submit" class="w-full bg-[#0B192C] hover:bg-[#1E3E62] text-[#FFD700] font-black py-3 rounded-xl shadow-lg transition-all">
+                    دخول اللوحة
+                </button>
+            </form>
+            <p id="auth-error" class="text-xs text-rose-600 font-bold mt-3 hidden">كلمة المرور غير صحيحة!</p>
+        </div>
+
+        <!-- TAB 3: TELLER CONTROL (محمية بكلمة سر) -->
+        <section id="tab-teller" class="hidden bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
+            <div class="flex flex-wrap justify-between items-center mb-6 gap-2">
+                <div>
+                    <h2 class="text-xl font-black text-[#0B192C]">لوحة الصراف - قبول ورفض طلبات المواعيد</h2>
+                    <p class="text-xs text-slate-500 mt-1">إدارة الطلبات القادمة من العملاء عبر الموقع</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="renderTellerRequests()" class="bg-[#0B192C] text-[#FFD700] px-4 py-2 rounded-xl text-xs font-bold">
+                        <i class="fa-solid fa-rotate"></i> تحديث
+                    </button>
+                    <button onclick="logoutTeller()" class="bg-rose-100 text-rose-700 px-3 py-2 rounded-xl text-xs font-bold border border-rose-200">
+                        <i class="fa-solid fa-right-from-bracket ml-1"></i> قفل اللوحة
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-200 text-xs text-slate-500 font-bold">
+                            <th class="pb-3">كود الموعد</th>
+                            <th class="pb-3">اسم العميل</th>
+                            <th class="pb-3">الهاتف</th>
+                            <th class="pb-3">التاريخ والوقت</th>
+                            <th class="pb-3">الملاحظات</th>
+                            <th class="pb-3">الحالة</th>
+                            <th class="pb-3">القرار (واتساب العميل)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teller-requests-body" class="divide-y divide-slate-100">
+                        <!-- JS Generated -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 4: CONTACTS DATABASE (محمية بكلمة سر) -->
+        <section id="tab-contacts" class="hidden bg-white p-6 rounded-3xl border border-slate-200 shadow-md">
+            <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                <div>
+                    <h2 class="text-xl font-black text-[#0B192C]">سجل أسماء وأرقام العملاء المحفوظة</h2>
+                    <p class="text-xs text-slate-500 mt-1">قاعدة بيانات جميع العملاء الذين قاموا بالطلب أو الحجز</p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <input type="text" id="contacts-search" oninput="renderContacts()" placeholder="بحث باسم العميل أو الرقم..." class="bg-slate-50 border border-slate-300 px-3 py-2 rounded-xl text-xs outline-none w-60" />
+                    <button onclick="exportContactsCSV()" class="bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold">
+                        <i class="fa-solid fa-file-excel ml-1"></i> تصدير البيانات
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-200 text-xs text-slate-500 font-bold">
+                            <th class="pb-3">اسم العميل</th>
+                            <th class="pb-3">رقم الهاتف / الواتساب</th>
+                            <th class="pb-3">عدد الحجوزات</th>
+                            <th class="pb-3">تاريخ تسجيل العميل</th>
+                            <th class="pb-3">تواصل</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contacts-table-body" class="divide-y divide-slate-100">
+                        <!-- JS Generated -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const BRANCH_WHATSAPP = '201003394577';
+        const ADMIN_PIN = 'admin2026'; // كلمة المرور الخاصة بالصرافين
+        let isAuthenticated = false;
+        let pendingTabTarget = null;
+
+        let currenciesData = [
+            { code: 'USD', name: 'دولار أمريكي', buy: 52.38, sell: 52.48 },
+            { code: 'EUR', name: 'يورو أوروبي', buy: 58.46, sell: 59.09 },
+            { code: 'SAR', name: 'ريال سعودي', buy: 13.92, sell: 13.95 },
+            { code: 'AED', name: 'درهم إماراتي', buy: 14.25, sell: 14.29 },
+            { code: 'GBP', name: 'جنيه إسترليني', buy: 69.21, sell: 69.42 },
+            { code: 'KWD', name: 'دينار كويتي', buy: 169.81, sell: 170.31 },
+            { code: 'QAR', name: 'ريال قطري', buy: 14.36, sell: 14.40 }
+        ];
+
+        let calcType = 'buy';
+
+        // Initialize default date
+        document.getElementById('client-date').value = new Date().toISOString().split('T')[0];
+
+        function switchTab(tab) {
+            document.querySelectorAll('section[id^="tab-"]').forEach(s => s.classList.add('hidden'));
+            document.getElementById('auth-modal').classList.add('hidden');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            if ((tab === 'teller' || tab === 'contacts') && !isAuthenticated) {
+                pendingTabTarget = tab;
+                document.getElementById('auth-modal').classList.remove('hidden');
+                document.getElementById('btn-' + tab).classList.add('active');
+                return;
+            }
+
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            document.getElementById('btn-' + tab).classList.add('active');
+
+            if (tab === 'teller') renderTellerRequests();
+            if (tab === 'contacts') renderContacts();
+        }
+
+        function handleAuthLogin(e) {
+            e.preventDefault();
+            const inputPin = document.getElementById('admin-pass-input').value;
+            if (inputPin === ADMIN_PIN) {
+                isAuthenticated = true;
+                document.getElementById('auth-error').classList.add('hidden');
+                document.getElementById('admin-pass-input').value = '';
+                switchTab(pendingTabTarget || 'teller');
+            } else {
+                document.getElementById('auth-error').classList.remove('hidden');
+            }
+        }
+
+        function logoutTeller() {
+            isAuthenticated = false;
+            switchTab('client');
+        }
+
+        // Live Exchange Rates Fetch
+        async function fetchLiveRates() {
+            try {
+                const res = await fetch('https://open.er-api.com/v6/latest/USD');
+                const data = await res.json();
+                if (data && data.rates && data.rates.EGP) {
+                    const usdEgp = data.rates.EGP;
+                    currenciesData.forEach(c => {
+                        if (c.code === 'USD') {
+                            c.buy = usdEgp;
+                            c.sell = usdEgp + 0.10;
+                        } else if (data.rates[c.code]) {
+                            const rateToEgp = usdEgp / data.rates[c.code];
+                            c.buy = rateToEgp;
+                            c.sell = rateToEgp * 1.005;
+                        }
+                    });
+                    renderRatesTable();
+                    alert('تم تحديث أسعار العملات بنجاح!');
+                }
+            } catch (err) {
+                renderRatesTable();
+            }
+        }
+
+        function renderRatesTable() {
+            const tbody = document.getElementById('rates-table-body');
+            tbody.innerHTML = '';
+            currenciesData.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50';
+                tr.innerHTML = `
+                    <td class="py-4 font-bold">${c.name} (${c.code})</td>
+                    <td class="py-4 font-bold text-emerald-600">${c.buy.toFixed(2)} ج.م</td>
+                    <td class="py-4 font-bold text-slate-900">${c.sell.toFixed(2)} ج.م</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            calculateTotal();
+        }
+
+        function setCalcType(type) {
+            calcType = type;
+            const btnBuy = document.getElementById('btn-calc-buy');
+            const btnSell = document.getElementById('btn-calc-sell');
+            if (type === 'buy') {
+                btnBuy.className = 'py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C]';
+                btnSell.className = 'py-2 text-xs font-bold rounded-lg text-slate-300';
+            } else {
+                btnSell.className = 'py-2 text-xs font-bold rounded-lg bg-[#D4AF37] text-[#0B192C]';
+                btnBuy.className = 'py-2 text-xs font-bold rounded-lg text-slate-300';
+            }
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            const code = document.getElementById('calc-currency').value;
+            const amount = parseFloat(document.getElementById('calc-amount').value) || 0;
+            const currObj = currenciesData.find(c => c.code === code) || currenciesData[0];
+            const rate = calcType === 'buy' ? currObj.buy : currObj.sell;
+            const total = (amount * rate).toLocaleString('ar-EG', { maximumFractionDigits: 2 });
+            document.getElementById('calc-total').innerHTML = `${total} <span class="text-sm font-normal text-slate-300">ج.م</span>`;
+        }
+
+        // Handle Appointment Submission
+        function handleClientAppointment(e) {
+            e.preventDefault();
+            const name = document.getElementById('client-name').value.trim();
+            const phone = document.getElementById('client-phone').value.trim();
+            const date = document.getElementById('client-date').value;
+            const time = document.getElementById('client-time').value;
+            const notes = document.getElementById('client-notes').value;
+
+            const reqId = 'APT-' + Math.floor(1000 + Math.random() * 9000);
+
+            const appointmentObj = {
+                id: reqId,
+                name: name,
+                phone: phone,
+                date: date,
+                time: time,
+                notes: notes || 'لا يوجد',
+                status: 'قيد الانتظار'
+            };
+
+            // Save to Appointments LocalStorage
+            let appointments = JSON.parse(localStorage.getItem('branch_appointments') || '[]');
+            appointments.unshift(appointmentObj);
+            localStorage.setItem('branch_appointments', JSON.stringify(appointments));
+
+            // Save Client to Contacts Database
+            saveToContacts(name, phone);
+
+            // Display Confirmation UI
+            document.getElementById('booking-response-card').innerHTML = `
+                <div class="bg-[#0B192C] text-white border-2 border-[#D4AF37] rounded-3xl p-6 shadow-2xl text-center">
+                    <p class="text-xs text-[#D4AF37] font-bold">تم تسجيل الموعد وإرساله للواتساب</p>
+                    <div class="text-3xl font-black text-[#FFD700] my-2">${reqId}</div>
+                    <p class="text-sm font-bold">${name}</p>
+                    <p class="text-xs text-slate-300 mt-1">📅 ${date} | ⏰ الساعة ${time}</p>
+                </div>
+            `;
+
+            // WhatsApp Message Direct to Branch Number (01003394577)
+            const waText = `مرحباً صرافة مصر (فرع سمالوط)، أرغب في حجز موعد زيارة:\n\n📌 كود الحجز: ${reqId}\n👤 الاسم: ${name}\n📞 الهاتف: ${phone}\n📅 الموعد: ${date} الساعة ${time}\n📝 ملاحظات: ${notes || 'لا يوجد'}\n\nيرجى تأكيد الحجز.`;
+            const waLink = `https://wa.me/${BRANCH_WHATSAPP}?text=${encodeURIComponent(waText)}`;
+            window.open(waLink, '_blank');
+        }
+
+        // Save Customer to Directory
+        function saveToContacts(name, phone) {
+            let contacts = JSON.parse(localStorage.getItem('branch_contacts') || '[]');
+            let existing = contacts.find(c => c.phone === phone);
+            if (existing) {
+                existing.count = (existing.count || 1) + 1;
+                existing.name = name;
+            } else {
+                contacts.push({
+                    name: name,
+                    phone: phone,
+                    count: 1,
+                    created: new Date().toLocaleDateString('ar-EG')
+                });
+            }
+            localStorage.setItem('branch_contacts', JSON.stringify(contacts));
+        }
+
+        // Render Teller Dashboard
+        function renderTellerRequests() {
+            const appointments = JSON.parse(localStorage.getItem('branch_appointments') || '[]');
+            const tbody = document.getElementById('teller-requests-body');
+            tbody.innerHTML = '';
+
+            if (appointments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-400">لا توجد حجز مواعيد جارية</td></tr>';
+                return;
+            }
+
+            appointments.forEach(a => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50';
+
+                let statusBadge = '<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">قيد الانتظار</span>';
+                if (a.status === 'مقبول') statusBadge = '<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">مقبول</span>';
+                if (a.status === 'مرفوض') statusBadge = '<span class="bg-rose-100 text-rose-800 text-xs font-bold px-2.5 py-1 rounded-full">مرفوض</span>';
+
+                let cleanPhone = a.phone.replace(/[^0-9]/g, '');
+                if (cleanPhone.startsWith('0')) cleanPhone = '20' + cleanPhone.substring(1);
+
+                const acceptMsg = `أهلاً بك أ/ ${a.name}، تم **قبول موعدك** (${a.id}) بشركة الصرافة المصرية - فرع سمالوط بنجاح يوم ${a.date} الساعة ${a.time}. ننتظرك بالفرع.`;
+                const rejectMsg = `أهلاً بك أ/ ${a.name}، نعتذر منك، لم نتمكن من إقرار موعدك (${a.id}) في هذا الوقت الموعد محجوز. يرجى اختيار موعد آخر.`;
+
+                tr.innerHTML = `
+                    <td class="py-4 font-black text-[#0B192C]">${a.id}</td>
+                    <td class="py-4 font-bold">${a.name}</td>
+                    <td class="py-4 text-slate-600" dir="ltr">${a.phone}</td>
+                    <td class="py-4 text-xs font-bold text-slate-800">${a.date}<br>${a.time}</td>
+                    <td class="py-4 text-xs text-slate-500">${a.notes}</td>
+                    <td class="py-4">${statusBadge}</td>
+                    <td class="py-4">
+                        <div class="flex gap-1">
+                            <a href="https://wa.me/${cleanPhone}?text=${encodeURIComponent(acceptMsg)}" target="_blank" onclick="updateAppointmentStatus('${a.id}', 'مقبول')" class="bg-emerald-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold hover:bg-emerald-700">موافقة</a>
+                            <a href="https://wa.me/${cleanPhone}?text=${encodeURIComponent(rejectMsg)}" target="_blank" onclick="updateAppointmentStatus('${a.id}', 'مرفوض')" class="bg-rose-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold hover:bg-rose-700">رفض</a>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateAppointmentStatus(id, newStatus) {
+            let appointments = JSON.parse(localStorage.getItem('branch_appointments') || '[]');
+            appointments = appointments.map(a => a.id === id ? { ...a, status: newStatus } : a);
+            localStorage.setItem('branch_appointments', JSON.stringify(appointments));
+            setTimeout(renderTellerRequests, 500);
+        }
+
+        // Render Contacts Directory
+        function renderContacts() {
+            const contacts = JSON.parse(localStorage.getItem('branch_contacts') || '[]');
+            const search = document.getElementById('contacts-search').value.toLowerCase();
+            const tbody = document.getElementById('contacts-table-body');
+            tbody.innerHTML = '';
+
+            const filtered = contacts.filter(c => c.name.toLowerCase().includes(search) || c.phone.includes(search));
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-slate-400">لا يوجد عملاء مسجلين في السجل حتى الآن</td></tr>';
+                return;
+            }
+
+            filtered.forEach(c => {
+                let cleanPhone = c.phone.replace(/[^0-9]/g, '');
+                if (cleanPhone.startsWith('0')) cleanPhone = '20' + cleanPhone.substring(1);
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50';
+                tr.innerHTML = `
+                    <td class="py-4 font-bold text-slate-900">${c.name}</td>
+                    <td class="py-4 font-bold text-slate-700" dir="ltr">${c.phone}</td>
+                    <td class="py-4"><span class="bg-slate-100 text-slate-800 font-bold px-2 py-1 rounded-md text-xs">${c.count} موعد</span></td>
+                    <td class="py-4 text-xs text-slate-500">${c.created || 'مسبقاً'}</td>
+                    <td class="py-4">
+                        <a href="https://wa.me/${cleanPhone}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold inline-flex items-center gap-1">
+                            <i class="fa-brands fa-whatsapp"></i> مراسلة
+                        </a>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Export Contacts to CSV File
+        function exportContactsCSV() {
+            const contacts = JSON.parse(localStorage.getItem('branch_contacts') || '[]');
+            if (contacts.length === 0) {
+                alert('لا يوجد بيانات للتصدير');
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFFالاسم,رقم الهاتف,عدد الحجوزات,تاريخ التسجيل\n";
+            contacts.forEach(c => {
+                csvContent += `"${c.name}","${c.phone}","${c.count}","${c.created}"\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "سجل_عملاء_صرافة_سمالوط.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Initialize Page
+        renderRatesTable();
+    </script>
+</body>
+</html>
